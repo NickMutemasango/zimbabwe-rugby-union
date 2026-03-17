@@ -115,8 +115,20 @@ export default function MatchCenter() {
       fetch("/api/fixtures").then((r) => r.json()).catch(() => []),
       fetch("/api/results").then((r) => r.json()).catch(() => []),
     ]).then(([fixtureData, resultData]) => {
-      setFixtures(Array.isArray(fixtureData) ? fixtureData : []);
-      setResults(Array.isArray(resultData) ? resultData : []);
+      const fixtureList: Fixture[] = Array.isArray(fixtureData) ? fixtureData : [];
+      const resultList:  Result[]  = Array.isArray(resultData)  ? resultData  : [];
+
+      // ── DEV: log API responses ─────────────────────────────────────────────
+      if (process.env.NODE_ENV !== "production") {
+        console.group("%c[MatchCenter] GET /api/fixtures + /api/results", "color:#22c55e;font-weight:bold");
+        console.log(`Fixtures: ${fixtureList.length} | Results: ${resultList.length}`);
+        if (fixtureList.length) console.table(fixtureList.map(f => ({ id: f.id, home: f.homeTeam, away: f.awayTeam, date: f.date, venue: f.venue })));
+        if (resultList.length)  console.table(resultList.map(r  => ({ id: r.id,  home: r.homeTeam, away: r.awayTeam, score: `${r.homeScore}–${r.awayScore}`, date: r.date })));
+        console.groupEnd();
+      }
+
+      setFixtures(fixtureList);
+      setResults(resultList);
     }).finally(() => setLoading(false));
   }, []);
 

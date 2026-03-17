@@ -15,9 +15,15 @@ export default function PlayersPage() {
           <p className="text-gray-500">Meet the warriors who wear the green and gold of Zimbabwe.</p>
         </div>
         {players.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">No players yet. Add some via the Admin Portal.</div>
+          <div className="text-center py-20">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">🏉</span>
+            </div>
+            <p className="text-gray-400 font-medium">No players yet.</p>
+            <p className="text-gray-300 text-sm mt-1">Add squad members via the <a href="/admin/update" className="text-[#006B3F] underline underline-offset-2">Admin Portal</a>.</p>
+          </div>
         ) : (
-          <PlayerGrid players={players} />
+          <PlayerGrid players={players} editable={false} />
         )}
       </div>
     </div>

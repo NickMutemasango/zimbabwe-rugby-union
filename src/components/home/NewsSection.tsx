@@ -69,8 +69,32 @@ export default function NewsSection() {
   useEffect(() => {
     fetch("/api/news")
       .then((r) => r.json())
-      .then((data) => setNews(Array.isArray(data) ? data : []))
-      .catch(() => setNews([]))
+      .then((data: unknown) => {
+        const list = Array.isArray(data) ? (data as NewsArticle[]) : [];
+
+        // ── DEV: log API response + field mapping ──────────────────────────
+        if (process.env.NODE_ENV !== "production") {
+          console.group("%c[NewsSection] GET /api/news", "color:#22c55e;font-weight:bold");
+          console.log(`Received ${list.length} article(s)`);
+          console.table(
+            list.map((a) => ({
+              id:            a.id,
+              title:         a.title,
+              category:      a.category,
+              date:          a.date,
+              featuredImage: a.featuredImage ?? "(none — gradient placeholder shown)",
+            }))
+          );
+          console.groupEnd();
+        }
+
+        setNews(list);
+      })
+      .catch((err) => {
+        if (process.env.NODE_ENV !== "production")
+          console.error("[NewsSection] Failed to fetch /api/news:", err);
+        setNews([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 
