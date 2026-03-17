@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-zru-green: #006B3F;
+  --color-zru-dark-green: #004D2C;
+  --color-zru-gold: #D4AF37;
+  --color-zru-light-gold: #F0D060;
+  --color-zru-dark: #0A1628;
+  --color-zru-darker: #050D1A;
+  --color-zru-gray: #1E293B;
+  --color-zru-light: #F8FAF9;
+  --font-heading: "Bebas Neue", "Impact", sans-serif;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0A1628;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #006B3F; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #D4AF37; }

@@ -1,0 +1,132 @@
+"use client";
+import { motion } from "framer-motion";
+import { Calendar, MapPin, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { MATCHES } from "@/lib/data";
+
+function MatchCard({ match, index }: { match: (typeof MATCHES)[0]; index: number }) {
+  const isResult = match.status === "result";
+  const isZimWin =
+    isResult &&
+    ((match.homeTeam === "Zimbabwe" && (match.homeScore ?? 0) > (match.awayScore ?? 0)) ||
+      (match.awayTeam === "Zimbabwe" && (match.awayScore ?? 0) > (match.homeScore ?? 0)));
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className="group bg-[#0A1628] border border-white/5 hover:border-[#006B3F]/50 rounded-2xl p-5 transition-all hover:shadow-2xl hover:shadow-[#006B3F]/15 hover:-translate-y-1"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-[10px] text-[#D4AF37] font-bold uppercase tracking-widest bg-[#D4AF37]/10 px-2 py-1 rounded-md">
+          {match.competition}
+        </span>
+        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md ${
+          isResult
+            ? isZimWin ? "bg-[#006B3F]/20 text-[#4ade80]" : "bg-red-500/20 text-red-400"
+            : "bg-blue-500/20 text-blue-400"
+        }`}>
+          {isResult ? (isZimWin ? "Win" : "Loss") : "Upcoming"}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <div className="flex flex-col items-center gap-1 flex-1">
+          <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-xs font-black text-white">
+            {match.homeTeam.slice(0, 3).toUpperCase()}
+          </div>
+          <span className="text-white font-bold text-sm text-center">{match.homeTeam}</span>
+        </div>
+
+        <div className="text-center flex-shrink-0">
+          {isResult ? (
+            <div className="text-3xl font-black text-white tabular-nums">
+              <span className={match.homeTeam === "Zimbabwe" && isZimWin ? "text-[#D4AF37]" : ""}>{match.homeScore}</span>
+              <span className="text-white/30 mx-1">—</span>
+              <span className={match.awayTeam === "Zimbabwe" && isZimWin ? "text-[#D4AF37]" : ""}>{match.awayScore}</span>
+            </div>
+          ) : (
+            <div className="text-xl font-black text-white/30">VS</div>
+          )}
+          <div className="text-[10px] text-white/40 mt-1 uppercase tracking-wider">{isResult ? "Full Time" : match.time}</div>
+        </div>
+
+        <div className="flex flex-col items-center gap-1 flex-1">
+          <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-xs font-black text-white">
+            {match.awayTeam.slice(0, 3).toUpperCase()}
+          </div>
+          <span className="text-white font-bold text-sm text-center">{match.awayTeam}</span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 text-white/40 text-xs border-t border-white/5 pt-3">
+        <span className="flex items-center gap-1">
+          <Calendar size={11} />
+          {new Date(match.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+        </span>
+        <span className="flex items-center gap-1 truncate">
+          <MapPin size={11} />
+          {match.venue}
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function MatchCenter() {
+  const upcoming = MATCHES.filter((m) => m.status === "upcoming");
+  const results = MATCHES.filter((m) => m.status === "result");
+
+  return (
+    <section className="py-20 bg-white relative overflow-hidden">
+      {/* Top green accent line */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#006B3F] to-transparent opacity-30" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <p className="text-[#006B3F] text-xs font-bold tracking-[0.3em] uppercase mb-3">Match Centre</p>
+          <h2 className="text-4xl sm:text-5xl font-black text-[#0A1628]">Fixtures & Results</h2>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-12">
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[#0A1628] font-bold text-lg flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                Upcoming Fixtures
+              </h3>
+              <Link href="/matches#fixtures" className="text-[#006B3F] text-sm flex items-center gap-1 hover:gap-2 transition-all font-medium">
+                All fixtures <ChevronRight size={14} />
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {upcoming.map((m, i) => <MatchCard key={m.id} match={m} index={i} />)}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[#0A1628] font-bold text-lg flex items-center gap-2">
+                <span className="w-2 h-2 bg-[#006B3F] rounded-full" />
+                Recent Results
+              </h3>
+              <Link href="/matches#results" className="text-[#006B3F] text-sm flex items-center gap-1 hover:gap-2 transition-all font-medium">
+                All results <ChevronRight size={14} />
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {results.map((m, i) => <MatchCard key={m.id} match={m} index={i} />)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
