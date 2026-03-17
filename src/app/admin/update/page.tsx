@@ -3,8 +3,9 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Save, Shield, Lock, Eye, EyeOff, AlertCircle,
-  Upload, FileText, Image as ImageIcon, X, CheckCircle, Loader2,
+  Upload, FileText, Image as ImageIcon, X, CheckCircle, Loader2, Users,
 } from "lucide-react";
+import Link from "next/link";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN || "zru2025admin";
@@ -382,6 +383,19 @@ export default function AdminUpdatePage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Quick Actions */}
+        <div className="mb-6 p-4 bg-white border border-gray-100 rounded-2xl shadow-sm">
+          <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Quick Actions</p>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/admin/players"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#0A1628] hover:bg-[#0d2040] text-white text-sm font-bold rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 border border-white/10">
+              <Users size={15} className="text-[#D4AF37]" />
+              Manage &amp; Edit Squad Players
+              <span className="text-[10px] text-white/40 bg-white/10 px-1.5 py-0.5 rounded-md ml-1">Edit / Delete</span>
+            </Link>
+          </div>
+        </div>
 
         {/* Tabs */}
         <div className="bg-white border border-gray-100 rounded-2xl p-2 shadow-sm mb-6 flex gap-1 flex-wrap">
