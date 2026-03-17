@@ -1,10 +1,11 @@
 "use client";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Shield, ChevronRight } from "lucide-react";
-import { PLAYERS } from "@/lib/data";
+import type { Player } from "@/lib/db";
 
-function PlayerCard({ player, index }: { player: (typeof PLAYERS)[0]; index: number }) {
+function PlayerCard({ player, index }: { player: Player; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -15,11 +16,11 @@ function PlayerCard({ player, index }: { player: (typeof PLAYERS)[0]; index: num
     >
       <div className="relative h-48 bg-gradient-to-b from-[#006B3F]/20 to-[#0A1628] overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-8xl font-black text-white/5">{player.number}</span>
+          <span className="text-8xl font-black text-white/5">{player.jerseyNumber}</span>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#0A1628] to-transparent" />
         <div className="absolute top-4 right-4 w-10 h-10 bg-[#D4AF37] rounded-full flex items-center justify-center">
-          <span className="text-[#050D1A] font-black text-sm">#{player.number}</span>
+          <span className="text-[#050D1A] font-black text-sm">#{player.jerseyNumber}</span>
         </div>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-20 h-20 bg-[#006B3F]/20 rounded-full border-2 border-[#006B3F]/30 flex items-center justify-center text-4xl">🏉</div>
@@ -44,7 +45,7 @@ function PlayerCard({ player, index }: { player: (typeof PLAYERS)[0]; index: num
       <div className="p-4">
         <div className="flex items-center justify-between mb-1">
           <span className="text-white font-bold text-sm">{player.name}</span>
-          <span className="text-[#D4AF37] font-black text-sm">#{player.number}</span>
+          <span className="text-[#D4AF37] font-black text-sm">#{player.jerseyNumber}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-white/40 text-xs">{player.position}</span>
@@ -58,7 +59,30 @@ function PlayerCard({ player, index }: { player: (typeof PLAYERS)[0]; index: num
   );
 }
 
+function SkeletonCard() {
+  return (
+    <div className="bg-[#0A1628] border border-white/5 rounded-2xl overflow-hidden animate-pulse">
+      <div className="h-48 bg-white/5" />
+      <div className="p-4 space-y-2">
+        <div className="h-3 bg-white/10 rounded w-3/4" />
+        <div className="h-3 bg-white/10 rounded w-1/2" />
+      </div>
+    </div>
+  );
+}
+
 export default function PlayerSection() {
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/players")
+      .then((r) => r.json())
+      .then((data) => setPlayers(Array.isArray(data) ? data : []))
+      .catch(() => setPlayers([]))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section className="py-20 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -79,9 +103,15 @@ export default function PlayerSection() {
         </motion.div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {PLAYERS.map((player, i) => (
-            <PlayerCard key={player.id} player={player} index={i} />
-          ))}
+          {loading ? (
+            Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+          ) : players.length === 0 ? (
+            <div className="col-span-full text-center py-16 text-gray-400">No players yet.</div>
+          ) : (
+            players.map((player, i) => (
+              <PlayerCard key={player.id} player={player} index={i} />
+            ))
+          )}
         </div>
       </div>
     </section>

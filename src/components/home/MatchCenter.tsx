@@ -1,15 +1,22 @@
 "use client";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { MATCHES } from "@/lib/data";
+import type { Fixture, Result } from "@/lib/db";
 
-function MatchCard({ match, index }: { match: (typeof MATCHES)[0]; index: number }) {
+type AnyMatch = (Fixture & { status: "upcoming" }) | (Result & { status: "result" });
+
+function MatchCard({ match, index }: { match: AnyMatch; index: number }) {
   const isResult = match.status === "result";
+  const homeScore = isResult ? (match as Result).homeScore : undefined;
+  const awayScore = isResult ? (match as Result).awayScore : undefined;
+  const time = !isResult ? (match as Fixture).time : undefined;
+
   const isZimWin =
     isResult &&
-    ((match.homeTeam === "Zimbabwe" && (match.homeScore ?? 0) > (match.awayScore ?? 0)) ||
-      (match.awayTeam === "Zimbabwe" && (match.awayScore ?? 0) > (match.homeScore ?? 0)));
+    ((match.homeTeam === "Zimbabwe" && (homeScore ?? 0) > (awayScore ?? 0)) ||
+      (match.awayTeam === "Zimbabwe" && (awayScore ?? 0) > (homeScore ?? 0)));
 
   return (
     <motion.div
@@ -43,14 +50,14 @@ function MatchCard({ match, index }: { match: (typeof MATCHES)[0]; index: number
         <div className="text-center flex-shrink-0">
           {isResult ? (
             <div className="text-3xl font-black text-white tabular-nums">
-              <span className={match.homeTeam === "Zimbabwe" && isZimWin ? "text-[#D4AF37]" : ""}>{match.homeScore}</span>
+              <span className={match.homeTeam === "Zimbabwe" && isZimWin ? "text-[#D4AF37]" : ""}>{homeScore}</span>
               <span className="text-white/30 mx-1">—</span>
-              <span className={match.awayTeam === "Zimbabwe" && isZimWin ? "text-[#D4AF37]" : ""}>{match.awayScore}</span>
+              <span className={match.awayTeam === "Zimbabwe" && isZimWin ? "text-[#D4AF37]" : ""}>{awayScore}</span>
             </div>
           ) : (
             <div className="text-xl font-black text-white/30">VS</div>
           )}
-          <div className="text-[10px] text-white/40 mt-1 uppercase tracking-wider">{isResult ? "Full Time" : match.time}</div>
+          <div className="text-[10px] text-white/40 mt-1 uppercase tracking-wider">{isResult ? "Full Time" : time}</div>
         </div>
 
         <div className="flex flex-col items-center gap-1 flex-1">
@@ -75,9 +82,46 @@ function MatchCard({ match, index }: { match: (typeof MATCHES)[0]; index: number
   );
 }
 
+function SkeletonCard() {
+  return (
+    <div className="bg-[#0A1628] border border-white/5 rounded-2xl p-5 animate-pulse space-y-4">
+      <div className="flex justify-between">
+        <div className="h-3 bg-white/10 rounded w-24" />
+        <div className="h-3 bg-white/10 rounded w-16" />
+      </div>
+      <div className="flex justify-between items-center gap-4">
+        <div className="flex flex-col items-center gap-2 flex-1">
+          <div className="w-12 h-12 bg-white/10 rounded-full" />
+          <div className="h-3 bg-white/10 rounded w-16" />
+        </div>
+        <div className="h-8 bg-white/10 rounded w-16" />
+        <div className="flex flex-col items-center gap-2 flex-1">
+          <div className="w-12 h-12 bg-white/10 rounded-full" />
+          <div className="h-3 bg-white/10 rounded w-16" />
+        </div>
+      </div>
+      <div className="h-3 bg-white/10 rounded w-32 pt-3" />
+    </div>
+  );
+}
+
 export default function MatchCenter() {
-  const upcoming = MATCHES.filter((m) => m.status === "upcoming");
-  const results = MATCHES.filter((m) => m.status === "result");
+  const [fixtures, setFixtures] = useState<Fixture[]>([]);
+  const [results, setResults] = useState<Result[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/fixtures").then((r) => r.json()).catch(() => []),
+      fetch("/api/results").then((r) => r.json()).catch(() => []),
+    ]).then(([fixtureData, resultData]) => {
+      setFixtures(Array.isArray(fixtureData) ? fixtureData : []);
+      setResults(Array.isArray(resultData) ? resultData : []);
+    }).finally(() => setLoading(false));
+  }, []);
+
+  const upcomingMatches: AnyMatch[] = fixtures.map((f) => ({ ...f, status: "upcoming" as const }));
+  const resultMatches: AnyMatch[] = results.map((r) => ({ ...r, status: "result" as const }));
 
   return (
     <section className="py-20 bg-white relative overflow-hidden">
@@ -92,7 +136,7 @@ export default function MatchCenter() {
           className="text-center mb-14"
         >
           <p className="text-[#006B3F] text-xs font-bold tracking-[0.3em] uppercase mb-3">Match Centre</p>
-          <h2 className="text-4xl sm:text-5xl font-black text-[#0A1628]">Fixtures & Results</h2>
+          <h2 className="text-4xl sm:text-5xl font-black text-[#0A1628]">Fixtures &amp; Results</h2>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -102,12 +146,18 @@ export default function MatchCenter() {
                 <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
                 Upcoming Fixtures
               </h3>
-              <Link href="/matches#fixtures" className="text-[#006B3F] text-sm flex items-center gap-1 hover:gap-2 transition-all font-medium">
+              <Link href="/matches" className="text-[#006B3F] text-sm flex items-center gap-1 hover:gap-2 transition-all font-medium">
                 All fixtures <ChevronRight size={14} />
               </Link>
             </div>
             <div className="space-y-4">
-              {upcoming.map((m, i) => <MatchCard key={m.id} match={m} index={i} />)}
+              {loading ? (
+                Array.from({ length: 2 }).map((_, i) => <SkeletonCard key={i} />)
+              ) : upcomingMatches.length === 0 ? (
+                <div className="text-center py-10 text-gray-400 text-sm">No upcoming fixtures.</div>
+              ) : (
+                upcomingMatches.map((m, i) => <MatchCard key={m.id} match={m} index={i} />)
+              )}
             </div>
           </div>
 
@@ -117,12 +167,18 @@ export default function MatchCenter() {
                 <span className="w-2 h-2 bg-[#006B3F] rounded-full" />
                 Recent Results
               </h3>
-              <Link href="/matches#results" className="text-[#006B3F] text-sm flex items-center gap-1 hover:gap-2 transition-all font-medium">
+              <Link href="/matches" className="text-[#006B3F] text-sm flex items-center gap-1 hover:gap-2 transition-all font-medium">
                 All results <ChevronRight size={14} />
               </Link>
             </div>
             <div className="space-y-4">
-              {results.map((m, i) => <MatchCard key={m.id} match={m} index={i} />)}
+              {loading ? (
+                Array.from({ length: 2 }).map((_, i) => <SkeletonCard key={i} />)
+              ) : resultMatches.length === 0 ? (
+                <div className="text-center py-10 text-gray-400 text-sm">No results yet.</div>
+              ) : (
+                resultMatches.map((m, i) => <MatchCard key={m.id} match={m} index={i} />)
+              )}
             </div>
           </div>
         </div>

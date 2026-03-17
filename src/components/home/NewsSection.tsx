@@ -1,10 +1,11 @@
 "use client";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Calendar, Tag, ArrowRight } from "lucide-react";
-import { NEWS } from "@/lib/data";
+import type { NewsArticle } from "@/lib/db";
 
-function NewsCard({ article, index, featured = false }: { article: (typeof NEWS)[0]; index: number; featured?: boolean }) {
+function NewsCard({ article, index, featured = false }: { article: NewsArticle; index: number; featured?: boolean }) {
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -37,7 +38,7 @@ function NewsCard({ article, index, featured = false }: { article: (typeof NEWS)
         </h3>
         <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4">{article.excerpt}</p>
         <Link
-          href={`/news/${article.slug}`}
+          href="/news"
           className="inline-flex items-center gap-1 text-[#006B3F] text-sm font-bold hover:gap-2 transition-all"
         >
           Read More <ArrowRight size={13} />
@@ -47,8 +48,33 @@ function NewsCard({ article, index, featured = false }: { article: (typeof NEWS)
   );
 }
 
+function SkeletonCard({ featured = false }: { featured?: boolean }) {
+  return (
+    <div className={`bg-white border border-gray-100 rounded-2xl overflow-hidden animate-pulse ${featured ? "lg:col-span-2" : ""}`}>
+      <div className={`bg-gray-200 ${featured ? "h-56" : "h-44"}`} />
+      <div className="p-5 space-y-3">
+        <div className="h-3 bg-gray-200 rounded w-24" />
+        <div className="h-4 bg-gray-200 rounded w-3/4" />
+        <div className="h-3 bg-gray-200 rounded w-full" />
+        <div className="h-3 bg-gray-200 rounded w-2/3" />
+      </div>
+    </div>
+  );
+}
+
 export default function NewsSection() {
-  const [featured, ...rest] = NEWS;
+  const [news, setNews] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/news")
+      .then((r) => r.json())
+      .then((data) => setNews(Array.isArray(data) ? data : []))
+      .catch(() => setNews([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const [featured, ...rest] = news;
 
   return (
     <section className="py-20 bg-gray-50 relative">
@@ -61,7 +87,7 @@ export default function NewsSection() {
         >
           <div>
             <p className="text-[#006B3F] text-xs font-bold tracking-[0.3em] uppercase mb-3">Latest</p>
-            <h2 className="text-4xl sm:text-5xl font-black text-[#0A1628]">News & Updates</h2>
+            <h2 className="text-4xl sm:text-5xl font-black text-[#0A1628]">News &amp; Updates</h2>
           </div>
           <Link href="/news" className="hidden sm:flex items-center gap-2 text-[#006B3F] font-bold hover:gap-3 transition-all text-sm">
             All News <ArrowRight size={16} />
@@ -69,10 +95,22 @@ export default function NewsSection() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <NewsCard article={featured} index={0} featured />
-          {rest.slice(0, 2).map((article, i) => (
-            <NewsCard key={article.id} article={article} index={i + 1} />
-          ))}
+          {loading ? (
+            <>
+              <SkeletonCard featured />
+              <SkeletonCard />
+              <SkeletonCard />
+            </>
+          ) : news.length === 0 ? (
+            <div className="lg:col-span-3 text-center py-16 text-gray-400">No news articles yet.</div>
+          ) : (
+            <>
+              <NewsCard article={featured} index={0} featured />
+              {rest.slice(0, 2).map((article, i) => (
+                <NewsCard key={article.id} article={article} index={i + 1} />
+              ))}
+            </>
+          )}
         </div>
       </div>
     </section>

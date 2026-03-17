@@ -1,0 +1,50 @@
+[
+  {
+    "id": "r001",
+    "homeTeam": "Zimbabwe",
+    "awayTeam": "Uganda",
+    "homeScore": 31,
+    "awayScore": 18,
+    "date": "2025-02-22",
+    "venue": "Harare Sports Club",
+    "competition": "Rugby Africa Cup 2025",
+    "report": "Zimbabwe ran in four tries with Brendan Munyai contributing 16 points to claim a comfortable Pool B victory.",
+    "createdAt": "2025-02-22T19:00:00.000Z"
+  },
+  {
+    "id": "r002",
+    "homeTeam": "Kenya",
+    "awayTeam": "Zimbabwe",
+    "homeScore": 22,
+    "awayScore": 27,
+    "date": "2025-01-18",
+    "venue": "RFUEA Ground, Nairobi",
+    "competition": "Rugby Africa Cup 2025",
+    "report": "Zimbabwe came from 10 points down at half-time to clinch a famous away victory in Nairobi. Farai Mukondiwa's late try sealed the win.",
+    "createdAt": "2025-01-18T19:00:00.000Z"
+  },
+  {
+    "id": "r003",
+    "homeTeam": "Zimbabwe",
+    "awayTeam": "Côte d'Ivoire",
+    "homeScore": 45,
+    "awayScore": 10,
+    "date": "2024-11-09",
+    "venue": "Harare Sports Club",
+    "competition": "Rugby World Cup 2027 Qualifier",
+    "report": "A dominant Sables display saw them run in seven tries in front of a packed Harare Sports Club crowd.",
+    "createdAt": "2024-11-09T19:00:00.000Z"
+  },
+  {
+    "id": "r004",
+    "homeTeam": "Namibia",
+    "awayTeam": "Zimbabwe",
+    "homeScore": 34,
+    "awayScore": 17,
+    "date": "2024-09-14",
+    "venue": "Hage Geingob Stadium, Windhoek",
+    "competition": "Rugby Africa Cup 2024",
+    "report": "Zimbabwe were outclassed by a powerful Namibia side, but showed resilience with two tries in the final quarter.",
+    "createdAt": "2024-09-14T19:00:00.000Z"
+  }
+]

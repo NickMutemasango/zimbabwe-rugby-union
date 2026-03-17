@@ -1,0 +1,62 @@
+[
+  {
+    "id": "p001",
+    "name": "Brendan Munyai",
+    "position": "Fly-half",
+    "jerseyNumber": 10,
+    "club": "Old Hararians",
+    "age": 27,
+    "caps": 42,
+    "points": 312,
+    "profilePicture": null,
+    "createdAt": "2024-01-10T08:00:00.000Z"
+  },
+  {
+    "id": "p002",
+    "name": "Takudzwa Ngwenya",
+    "position": "Wing",
+    "jerseyNumber": 11,
+    "club": "Harare Sports Club",
+    "age": 25,
+    "caps": 28,
+    "points": 140,
+    "profilePicture": null,
+    "createdAt": "2024-01-10T08:05:00.000Z"
+  },
+  {
+    "id": "p003",
+    "name": "Simba Nhiwatiwa",
+    "position": "Prop",
+    "jerseyNumber": 1,
+    "club": "Matabeleland Tuskers",
+    "age": 29,
+    "caps": 55,
+    "points": 20,
+    "profilePicture": null,
+    "createdAt": "2024-01-10T08:10:00.000Z"
+  },
+  {
+    "id": "p004",
+    "name": "Farai Mukondiwa",
+    "position": "Number 8",
+    "jerseyNumber": 8,
+    "club": "Old Hararians",
+    "age": 26,
+    "caps": 34,
+    "points": 65,
+    "profilePicture": null,
+    "createdAt": "2024-01-10T08:15:00.000Z"
+  },
+  {
+    "id": "p005",
+    "name": "Kudzai Mashawi",
+    "position": "Scrum-half",
+    "jerseyNumber": 9,
+    "club": "Harare Sports Club",
+    "age": 24,
+    "caps": 19,
+    "points": 45,
+    "profilePicture": null,
+    "createdAt": "2024-01-10T08:20:00.000Z"
+  }
+]

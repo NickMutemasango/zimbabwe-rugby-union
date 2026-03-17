@@ -1,0 +1,42 @@
+[
+  {
+    "id": "a001",
+    "title": "ZRU Annual Report 2024",
+    "description": "The official Zimbabwe Rugby Union Annual Report covering governance, finances, and programme highlights for the 2024 calendar year.",
+    "pdfUrl": "/uploads/pdfs/placeholder-annual-report.pdf",
+    "thumbnailUrl": null,
+    "fileSize": "2.4 MB",
+    "date": "2025-01-20",
+    "createdAt": "2025-01-20T08:00:00.000Z"
+  },
+  {
+    "id": "a002",
+    "title": "Sables Rugby World Cup 2027 Qualification Roadmap",
+    "description": "A strategic document outlining Zimbabwe Rugby Union's phased approach and targets for qualifying for Rugby World Cup 2027 in Australia.",
+    "pdfUrl": "/uploads/pdfs/placeholder-rwc-roadmap.pdf",
+    "thumbnailUrl": null,
+    "fileSize": "1.8 MB",
+    "date": "2024-11-15",
+    "createdAt": "2024-11-15T09:00:00.000Z"
+  },
+  {
+    "id": "a003",
+    "title": "Zimbabwe Rugby Grassroots Development Guide",
+    "description": "A comprehensive coaching resource for schools and clubs on developing young rugby talent across Zimbabwe's provinces.",
+    "pdfUrl": "/uploads/pdfs/placeholder-grassroots.pdf",
+    "thumbnailUrl": null,
+    "fileSize": "3.1 MB",
+    "date": "2024-08-01",
+    "createdAt": "2024-08-01T10:00:00.000Z"
+  },
+  {
+    "id": "a004",
+    "title": "Player Welfare & Anti-Doping Policy",
+    "description": "Official ZRU policy document covering player welfare standards, injury management protocols, and anti-doping compliance in line with World Rugby regulations.",
+    "pdfUrl": "/uploads/pdfs/placeholder-welfare.pdf",
+    "thumbnailUrl": null,
+    "fileSize": "980 KB",
+    "date": "2024-06-10",
+    "createdAt": "2024-06-10T11:00:00.000Z"
+  }
+]
