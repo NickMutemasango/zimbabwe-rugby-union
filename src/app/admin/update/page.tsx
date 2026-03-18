@@ -1,43 +1,38 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Save, Shield, Lock, Eye, EyeOff, AlertCircle,
-  Upload, FileText, Image as ImageIcon, X, CheckCircle, Loader2, Users,
+  Upload, FileText, Image as ImageIcon, X, CheckCircle,
+  Loader2, Users, Trash2, RefreshCw, ChevronDown, ChevronUp,
 } from "lucide-react";
 import Link from "next/link";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN || "zru2025admin";
 
-// ── Safe API helper ──────────────────────────────────────────────────────────
-// Prevents "Unexpected token '<'" when the server returns an HTML error page
-// instead of JSON (e.g. 413, 500 before the route handler runs).
+// ── Safe API helpers ──────────────────────────────────────────────────────────
 async function apiPost(url: string, body: FormData): Promise<unknown> {
   const res  = await fetch(url, { method: "POST", body });
   const text = await res.text();
-
-  if (process.env.NODE_ENV !== "production") {
-    console.group(`%c[Admin] POST ${url}`, "color:#D4AF37;font-weight:bold");
-    console.log("HTTP status :", res.status, res.statusText);
-    console.log("Raw response:", text.slice(0, 300));
-    console.groupEnd();
-  }
-
   let json: Record<string, unknown>;
-  try {
-    json = JSON.parse(text);
-  } catch {
-    // Server returned HTML (e.g. Next.js error page) — show the status code
-    throw new Error(`Server error (HTTP ${res.status}). Check the terminal for details.`);
-  }
-
-  if (!res.ok) {
-    throw new Error((json.error as string) || (json.message as string) || `HTTP ${res.status}`);
-  }
+  try { json = JSON.parse(text); }
+  catch { throw new Error(`Server error (HTTP ${res.status}). Check the terminal for details.`); }
+  if (!res.ok) throw new Error((json.error as string) || (json.message as string) || `HTTP ${res.status}`);
   return json;
 }
 
+async function apiDelete(url: string): Promise<void> {
+  const res = await fetch(url, { method: "DELETE" });
+  if (!res.ok) {
+    const text = await res.text();
+    let msg = `HTTP ${res.status}`;
+    try { msg = (JSON.parse(text) as Record<string, string>).error || msg; } catch { /* ignore */ }
+    throw new Error(msg);
+  }
+}
+
+// ── Shared UI primitives ─────────────────────────────────────────────────────
 const baseInput =
   "w-full px-4 py-3 bg-gray-50 border border-gray-200 focus:border-[#006B3F] rounded-xl text-[#0A1628] placeholder:text-gray-300 focus:outline-none transition-colors text-sm";
 
@@ -117,15 +112,6 @@ function FileZone({ label, accept, helpText, icon: Icon, file, onChange, error }
   );
 }
 
-type Tab = "player" | "news" | "fixture" | "result" | "article";
-const TABS: { value: Tab; label: string; emoji: string }[] = [
-  { value: "player",  label: "Player",      emoji: "🏉" },
-  { value: "news",    label: "News",         emoji: "📰" },
-  { value: "article", label: "Article/PDF",  emoji: "📄" },
-  { value: "fixture", label: "Fixture",      emoji: "📅" },
-  { value: "result",  label: "Result",       emoji: "🏆" },
-];
-
 function SubmitBtn({ loading, label }: { loading: boolean; label: string }) {
   return (
     <button type="submit" disabled={loading}
@@ -136,6 +122,105 @@ function SubmitBtn({ loading, label }: { loading: boolean; label: string }) {
   );
 }
 
+// ── Generic Manage Section ────────────────────────────────────────────────────
+type AnyRecord = Record<string, unknown>;
+
+function ManageSection({
+  endpoint,
+  label,
+  renderRow,
+  onDeleted,
+}: {
+  endpoint: string;
+  label: string;
+  renderRow: (item: AnyRecord) => React.ReactNode;
+  onDeleted?: () => void;
+}) {
+  const [items, setItems]   = useState<AnyRecord[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen]     = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [error, setError]   = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true); setError("");
+    try {
+      const res = await fetch(endpoint);
+      const data = await res.json();
+      setItems(Array.isArray(data) ? data : []);
+    } catch { setError("Failed to load items"); }
+    finally { setLoading(false); }
+  }, [endpoint]);
+
+  useEffect(() => { if (open) load(); }, [open, load]);
+
+  async function handleDelete(id: string) {
+    if (!confirm(`Delete this ${label}? This cannot be undone.`)) return;
+    setDeletingId(id);
+    try {
+      await apiDelete(`${endpoint}/${id}`);
+      setItems(prev => prev.filter(i => (i.id as string) !== id));
+      onDeleted?.();
+    } catch (e) { alert(e instanceof Error ? e.message : "Delete failed"); }
+    finally { setDeletingId(null); }
+  }
+
+  return (
+    <div className="mt-6 border-t border-gray-100 pt-5">
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#006B3F] transition-colors w-full"
+      >
+        {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        Manage existing {label}s
+        {open && (
+          <button type="button" onClick={(e) => { e.stopPropagation(); load(); }}
+            className="ml-auto p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors">
+            <RefreshCw size={13} />
+          </button>
+        )}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+            <div className="mt-3 space-y-2">
+              {loading && (
+                <div className="flex items-center gap-2 text-gray-400 text-sm py-4 justify-center">
+                  <Loader2 size={15} className="animate-spin" /> Loading…
+                </div>
+              )}
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {!loading && items.length === 0 && !error && (
+                <p className="text-gray-400 text-sm text-center py-4">No {label}s found.</p>
+              )}
+              {items.map(item => (
+                <div key={item.id as string}
+                  className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="flex-1 min-w-0">{renderRow(item)}</div>
+                  <button
+                    type="button"
+                    disabled={deletingId === (item.id as string)}
+                    onClick={() => handleDelete(item.id as string)}
+                    className="p-2 bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 rounded-lg transition-colors flex-shrink-0 disabled:opacity-40"
+                  >
+                    {deletingId === (item.id as string)
+                      ? <Loader2 size={14} className="animate-spin" />
+                      : <Trash2 size={14} />}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ── Tab Forms ─────────────────────────────────────────────────────────────────
 function PlayerForm({ onSuccess }: { onSuccess: () => void }) {
   const [pic, setPic] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -214,6 +299,17 @@ function NewsForm({ onSuccess }: { onSuccess: () => void }) {
       <FileZone label="Featured Image (optional)" accept="image/jpeg,image/png,image/webp"
         helpText="Max 5 MB · JPEG, PNG or WEBP" icon={ImageIcon} file={img} onChange={setImg} />
       <SubmitBtn loading={loading} label="Publish News" />
+
+      <ManageSection
+        endpoint="/api/news"
+        label="news article"
+        renderRow={(item) => (
+          <div>
+            <p className="text-[#0A1628] text-sm font-semibold truncate">{item.title as string}</p>
+            <p className="text-gray-400 text-xs">{item.date as string}</p>
+          </div>
+        )}
+      />
     </form>
   );
 }
@@ -246,6 +342,17 @@ function ArticleForm({ onSuccess }: { onSuccess: () => void }) {
       <FileZone label="Upload PDF *" accept="application/pdf"
         helpText="Max 20 MB · PDF files only" icon={FileText} file={pdf} onChange={setPdf} />
       <SubmitBtn loading={loading} label="Upload Article" />
+
+      <ManageSection
+        endpoint="/api/articles"
+        label="article"
+        renderRow={(item) => (
+          <div>
+            <p className="text-[#0A1628] text-sm font-semibold truncate">{item.title as string}</p>
+            <p className="text-gray-400 text-xs">{item.date as string} · {item.fileSize as string}</p>
+          </div>
+        )}
+      />
     </form>
   );
 }
@@ -278,6 +385,19 @@ function FixtureForm({ onSuccess }: { onSuccess: () => void }) {
       <Input label="Venue *" name="venue" placeholder="e.g. Harare Sports Club" required />
       <Input label="Competition *" name="competition" placeholder="e.g. Rugby Africa Cup 2025" required />
       <SubmitBtn loading={loading} label="Schedule Fixture" />
+
+      <ManageSection
+        endpoint="/api/fixtures"
+        label="fixture"
+        renderRow={(item) => (
+          <div>
+            <p className="text-[#0A1628] text-sm font-semibold truncate">
+              {item.homeTeam as string} vs {item.awayTeam as string}
+            </p>
+            <p className="text-gray-400 text-xs">{item.date as string} · {item.venue as string}</p>
+          </div>
+        )}
+      />
     </form>
   );
 }
@@ -314,10 +434,24 @@ function ResultForm({ onSuccess }: { onSuccess: () => void }) {
       <Input label="Competition *" name="competition" placeholder="e.g. Rugby Africa Cup 2025" required />
       <Textarea label="Match Report Summary" name="report" placeholder="Brief match summary…" />
       <SubmitBtn loading={loading} label="Save Result" />
+
+      <ManageSection
+        endpoint="/api/results"
+        label="result"
+        renderRow={(item) => (
+          <div>
+            <p className="text-[#0A1628] text-sm font-semibold truncate">
+              {item.homeTeam as string} {item.homeScore as number}–{item.awayScore as number} {item.awayTeam as string}
+            </p>
+            <p className="text-gray-400 text-xs">{item.date as string} · {item.competition as string}</p>
+          </div>
+        )}
+      />
     </form>
   );
 }
 
+// ── PIN Gate ──────────────────────────────────────────────────────────────────
 function PinGate({ onUnlock }: { onUnlock: () => void }) {
   const [pin, setPin] = useState("");
   const [show, setShow] = useState(false);
@@ -367,6 +501,16 @@ function PinGate({ onUnlock }: { onUnlock: () => void }) {
   );
 }
 
+// ── Main Page ─────────────────────────────────────────────────────────────────
+type Tab = "player" | "news" | "fixture" | "result" | "article";
+const TABS: { value: Tab; label: string; emoji: string }[] = [
+  { value: "player",  label: "Player",      emoji: "🏉" },
+  { value: "news",    label: "News",         emoji: "📰" },
+  { value: "article", label: "Article/PDF",  emoji: "📄" },
+  { value: "fixture", label: "Fixture",      emoji: "📅" },
+  { value: "result",  label: "Result",       emoji: "🏆" },
+];
+
 export default function AdminUpdatePage() {
   const [unlocked, setUnlocked] = useState(false);
   const [tab, setTab] = useState<Tab>("player");
@@ -388,7 +532,7 @@ export default function AdminUpdatePage() {
               </div>
               <div>
                 <h1 className="text-3xl font-black text-[#0A1628]">Content Manager</h1>
-                <p className="text-gray-400 text-sm">Add players, news, articles, fixtures &amp; results</p>
+                <p className="text-gray-400 text-sm">Add, manage &amp; delete site content</p>
               </div>
             </div>
             <button onClick={() => setUnlocked(false)}
