@@ -8,8 +8,8 @@ const ALLOWED: Record<UploadType, string[]> = {
 };
 
 const MAX_SIZE: Record<UploadType, number> = {
-  image:  5 * 1024 * 1024,   // 5 MB
-  pdf:   20 * 1024 * 1024,   // 20 MB
+  image: 50 * 1024 * 1024,   // 50 MB
+  pdf:   50 * 1024 * 1024,   // 50 MB
 };
 
 export interface UploadResult {

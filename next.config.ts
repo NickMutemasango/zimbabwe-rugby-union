@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
   // ── Body-size limit for multipart form uploads (Server Actions) ─────────────
   experimental: {
     serverActions: {
-      bodySizeLimit: "20mb",
+      bodySizeLimit: "50mb",
     },
   },
 };

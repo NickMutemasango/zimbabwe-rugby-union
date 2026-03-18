@@ -5,6 +5,7 @@ import {
   Save, Shield, Lock, Eye, EyeOff, AlertCircle,
   Upload, FileText, Image as ImageIcon, X, CheckCircle,
   Loader2, Users, Trash2, RefreshCw, ChevronDown, ChevronUp,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
@@ -125,27 +126,99 @@ function SubmitBtn({ loading, label }: { loading: boolean; label: string }) {
 // ── Generic Manage Section ────────────────────────────────────────────────────
 type AnyRecord = Record<string, unknown>;
 
+// Matches the same dark-glass style as PlayerGrid's DeleteConfirm
+function DeleteModal({
+  label,
+  itemName,
+  onCancel,
+  onConfirm,
+}: {
+  label: string;
+  itemName: string;
+  onCancel: () => void;
+  onConfirm: () => Promise<void>;
+}) {
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onCancel(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onCancel]);
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    await onConfirm();
+    setLoading(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop — same as PlayerGrid */}
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onCancel}
+      />
+      {/* Modal — same dark style as PlayerGrid */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ type: "spring", damping: 25, stiffness: 280 }}
+        className="relative bg-[#0A1628] border border-white/10 rounded-2xl p-6 w-full max-w-sm text-center shadow-2xl"
+      >
+        <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle size={22} className="text-red-400" />
+        </div>
+        <h3 className="text-white font-black text-lg mb-1">
+          Delete {label.charAt(0).toUpperCase() + label.slice(1)}?
+        </h3>
+        <p className="text-white/50 text-sm mb-6">
+          <span className="text-white font-bold">&ldquo;{itemName}&rdquo;</span> will be permanently removed. This cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <button
+            type="button" onClick={onCancel}
+            className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white/60 rounded-xl text-sm transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="button" onClick={handleConfirm} disabled={loading}
+            className="flex-1 py-3 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-black rounded-xl text-sm flex items-center justify-center gap-2 transition-colors"
+          >
+            {loading ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+            {loading ? "Deleting…" : "Delete"}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 function ManageSection({
   endpoint,
   label,
   renderRow,
+  getItemName,
   onDeleted,
 }: {
   endpoint: string;
   label: string;
   renderRow: (item: AnyRecord) => React.ReactNode;
+  getItemName: (item: AnyRecord) => string;
   onDeleted?: () => void;
 }) {
-  const [items, setItems]   = useState<AnyRecord[]>([]);
+  const [items, setItems]     = useState<AnyRecord[]>([]);
   const [loading, setLoading] = useState(false);
-  const [open, setOpen]     = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [error, setError]   = useState("");
+  const [open, setOpen]       = useState(false);
+  const [error, setError]     = useState("");
+  // Track which item's delete modal is open
+  const [pendingDelete, setPendingDelete] = useState<AnyRecord | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true); setError("");
     try {
-      const res = await fetch(endpoint);
+      const res  = await fetch(endpoint);
       const data = await res.json();
       setItems(Array.isArray(data) ? data : []);
     } catch { setError("Failed to load items"); }
@@ -154,69 +227,83 @@ function ManageSection({
 
   useEffect(() => { if (open) load(); }, [open, load]);
 
-  async function handleDelete(id: string) {
-    if (!confirm(`Delete this ${label}? This cannot be undone.`)) return;
-    setDeletingId(id);
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return;
     try {
-      await apiDelete(`${endpoint}/${id}`);
-      setItems(prev => prev.filter(i => (i.id as string) !== id));
+      await apiDelete(`${endpoint}/${pendingDelete.id as string}`);
+      setItems(prev => prev.filter(i => (i.id as string) !== (pendingDelete.id as string)));
       onDeleted?.();
-    } catch (e) { alert(e instanceof Error ? e.message : "Delete failed"); }
-    finally { setDeletingId(null); }
-  }
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Delete failed");
+    } finally {
+      setPendingDelete(null);
+    }
+  };
 
   return (
-    <div className="mt-6 border-t border-gray-100 pt-5">
-      <button
-        type="button"
-        onClick={() => setOpen(v => !v)}
-        className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#006B3F] transition-colors w-full"
-      >
-        {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        Manage existing {label}s
-        {open && (
-          <button type="button" onClick={(e) => { e.stopPropagation(); load(); }}
-            className="ml-auto p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors">
-            <RefreshCw size={13} />
-          </button>
-        )}
-      </button>
+    <>
+      <div className="mt-6 border-t border-gray-100 pt-5">
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#006B3F] transition-colors w-full"
+        >
+          {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          Manage existing {label}s
+          {open && (
+            <button type="button" onClick={(e) => { e.stopPropagation(); load(); }}
+              className="ml-auto p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors">
+              <RefreshCw size={13} />
+            </button>
+          )}
+        </button>
 
+        <AnimatePresence>
+          {open && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+              <div className="mt-3 space-y-2">
+                {loading && (
+                  <div className="flex items-center gap-2 text-gray-400 text-sm py-4 justify-center">
+                    <Loader2 size={15} className="animate-spin" /> Loading…
+                  </div>
+                )}
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                {!loading && items.length === 0 && !error && (
+                  <p className="text-gray-400 text-sm text-center py-4">No {label}s found.</p>
+                )}
+                {items.map(item => (
+                  <div key={item.id as string}
+                    className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <div className="flex-1 min-w-0">{renderRow(item)}</div>
+                    <button
+                      type="button"
+                      onClick={() => setPendingDelete(item)}
+                      className="p-2 bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 rounded-lg transition-colors flex-shrink-0"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Professional delete confirmation modal */}
       <AnimatePresence>
-        {open && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-            <div className="mt-3 space-y-2">
-              {loading && (
-                <div className="flex items-center gap-2 text-gray-400 text-sm py-4 justify-center">
-                  <Loader2 size={15} className="animate-spin" /> Loading…
-                </div>
-              )}
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              {!loading && items.length === 0 && !error && (
-                <p className="text-gray-400 text-sm text-center py-4">No {label}s found.</p>
-              )}
-              {items.map(item => (
-                <div key={item.id as string}
-                  className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                  <div className="flex-1 min-w-0">{renderRow(item)}</div>
-                  <button
-                    type="button"
-                    disabled={deletingId === (item.id as string)}
-                    onClick={() => handleDelete(item.id as string)}
-                    className="p-2 bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 rounded-lg transition-colors flex-shrink-0 disabled:opacity-40"
-                  >
-                    {deletingId === (item.id as string)
-                      ? <Loader2 size={14} className="animate-spin" />
-                      : <Trash2 size={14} />}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+        {pendingDelete && (
+          <DeleteModal
+            key="delete-modal"
+            label={label}
+            itemName={getItemName(pendingDelete)}
+            onCancel={() => setPendingDelete(null)}
+            onConfirm={handleConfirmDelete}
+          />
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }
 
@@ -259,7 +346,7 @@ function PlayerForm({ onSuccess }: { onSuccess: () => void }) {
         <Input label="Points" name="points" type="number" placeholder="187" />
       </div>
       <FileZone label="Profile Picture" accept="image/jpeg,image/png,image/webp"
-        helpText="Max 5 MB · JPEG, PNG or WEBP" icon={ImageIcon} file={pic} onChange={setPic} />
+        helpText="Max 50 MB · JPEG, PNG or WEBP" icon={ImageIcon} file={pic} onChange={setPic} />
       <SubmitBtn loading={loading} label="Save Player" />
     </form>
   );
@@ -297,12 +384,13 @@ function NewsForm({ onSuccess }: { onSuccess: () => void }) {
       <Textarea label="Excerpt *" name="excerpt" placeholder="Short summary shown on news cards…" />
       <Textarea label="Full Article Body" name="content" placeholder="Full article content…" />
       <FileZone label="Featured Image (optional)" accept="image/jpeg,image/png,image/webp"
-        helpText="Max 5 MB · JPEG, PNG or WEBP" icon={ImageIcon} file={img} onChange={setImg} />
+        helpText="Max 50 MB · JPEG, PNG or WEBP" icon={ImageIcon} file={img} onChange={setImg} />
       <SubmitBtn loading={loading} label="Publish News" />
 
       <ManageSection
         endpoint="/api/news"
         label="news article"
+        getItemName={(item) => item.title as string}
         renderRow={(item) => (
           <div>
             <p className="text-[#0A1628] text-sm font-semibold truncate">{item.title as string}</p>
@@ -340,12 +428,13 @@ function ArticleForm({ onSuccess }: { onSuccess: () => void }) {
       <Input label="Date *" name="date" type="date" required defaultValue={new Date().toISOString().split("T")[0]} />
       <Textarea label="Description" name="description" placeholder="Brief description of this document…" />
       <FileZone label="Upload PDF *" accept="application/pdf"
-        helpText="Max 20 MB · PDF files only" icon={FileText} file={pdf} onChange={setPdf} />
+        helpText="Max 50 MB · PDF files only" icon={FileText} file={pdf} onChange={setPdf} />
       <SubmitBtn loading={loading} label="Upload Article" />
 
       <ManageSection
         endpoint="/api/articles"
         label="article"
+        getItemName={(item) => item.title as string}
         renderRow={(item) => (
           <div>
             <p className="text-[#0A1628] text-sm font-semibold truncate">{item.title as string}</p>
@@ -389,6 +478,7 @@ function FixtureForm({ onSuccess }: { onSuccess: () => void }) {
       <ManageSection
         endpoint="/api/fixtures"
         label="fixture"
+        getItemName={(item) => `${item.homeTeam as string} vs ${item.awayTeam as string}`}
         renderRow={(item) => (
           <div>
             <p className="text-[#0A1628] text-sm font-semibold truncate">
@@ -438,6 +528,7 @@ function ResultForm({ onSuccess }: { onSuccess: () => void }) {
       <ManageSection
         endpoint="/api/results"
         label="result"
+        getItemName={(item) => `${item.homeTeam as string} ${item.homeScore as number}–${item.awayScore as number} ${item.awayTeam as string}`}
         renderRow={(item) => (
           <div>
             <p className="text-[#0A1628] text-sm font-semibold truncate">

@@ -50,8 +50,8 @@ function EditPlayerModal({
     if (!["image/jpeg","image/png","image/webp"].includes(file.type)) {
       setErrMsg("Only JPG, PNG, or WEBP allowed."); setStatus("error"); return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setErrMsg("Image must be under 5 MB."); setStatus("error"); return;
+    if (file.size > 50 * 1024 * 1024) {
+      setErrMsg("Image must be under 50 MB."); setStatus("error"); return;
     }
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
@@ -139,7 +139,7 @@ function EditPlayerModal({
                 <button type="button" onClick={() => fileRef.current?.click()}
                   className="flex items-center gap-2 px-3 py-2.5 border border-dashed border-white/20 hover:border-[#006B3F] rounded-xl text-white/40 hover:text-white text-xs transition-all w-full justify-center">
                   <Upload size={13} />
-                  {photoFile ? photoFile.name : "JPG / PNG / WEBP  ·  max 5 MB"}
+                  {photoFile ? photoFile.name : "JPG / PNG / WEBP  ·  max 50 MB"}
                 </button>
               </div>
             </div>
