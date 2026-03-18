@@ -10,6 +10,34 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN || "zru2025admin";
 
+// ── Safe API helper ──────────────────────────────────────────────────────────
+// Prevents "Unexpected token '<'" when the server returns an HTML error page
+// instead of JSON (e.g. 413, 500 before the route handler runs).
+async function apiPost(url: string, body: FormData): Promise<unknown> {
+  const res  = await fetch(url, { method: "POST", body });
+  const text = await res.text();
+
+  if (process.env.NODE_ENV !== "production") {
+    console.group(`%c[Admin] POST ${url}`, "color:#D4AF37;font-weight:bold");
+    console.log("HTTP status :", res.status, res.statusText);
+    console.log("Raw response:", text.slice(0, 300));
+    console.groupEnd();
+  }
+
+  let json: Record<string, unknown>;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    // Server returned HTML (e.g. Next.js error page) — show the status code
+    throw new Error(`Server error (HTTP ${res.status}). Check the terminal for details.`);
+  }
+
+  if (!res.ok) {
+    throw new Error((json.error as string) || (json.message as string) || `HTTP ${res.status}`);
+  }
+  return json;
+}
+
 const baseInput =
   "w-full px-4 py-3 bg-gray-50 border border-gray-200 focus:border-[#006B3F] rounded-xl text-[#0A1628] placeholder:text-gray-300 focus:outline-none transition-colors text-sm";
 
@@ -119,8 +147,7 @@ function PlayerForm({ onSuccess }: { onSuccess: () => void }) {
     const fd = new FormData(e.currentTarget);
     if (pic) fd.set("profilePicture", pic);
     try {
-      const res = await fetch("/api/players", { method: "POST", body: fd });
-      if (!res.ok) throw new Error((await res.json()).error);
+      await apiPost("/api/players", fd);
       formRef.current?.reset(); setPic(null); onSuccess();
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed"); }
     finally { setLoading(false); }
@@ -164,8 +191,7 @@ function NewsForm({ onSuccess }: { onSuccess: () => void }) {
     const fd = new FormData(e.currentTarget);
     if (img) fd.set("featuredImage", img);
     try {
-      const res = await fetch("/api/news", { method: "POST", body: fd });
-      if (!res.ok) throw new Error((await res.json()).error);
+      await apiPost("/api/news", fd);
       formRef.current?.reset(); setImg(null); onSuccess();
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed"); }
     finally { setLoading(false); }
@@ -205,8 +231,7 @@ function ArticleForm({ onSuccess }: { onSuccess: () => void }) {
     const fd = new FormData(e.currentTarget);
     fd.set("pdf", pdf);
     try {
-      const res = await fetch("/api/articles", { method: "POST", body: fd });
-      if (!res.ok) throw new Error((await res.json()).error);
+      await apiPost("/api/articles", fd);
       formRef.current?.reset(); setPdf(null); onSuccess();
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed"); }
     finally { setLoading(false); }
@@ -233,8 +258,7 @@ function FixtureForm({ onSuccess }: { onSuccess: () => void }) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault(); setLoading(true); setError("");
     try {
-      const res = await fetch("/api/fixtures", { method: "POST", body: new FormData(e.currentTarget) });
-      if (!res.ok) throw new Error((await res.json()).error);
+      await apiPost("/api/fixtures", new FormData(e.currentTarget));
       formRef.current?.reset(); onSuccess();
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed"); }
     finally { setLoading(false); }
@@ -266,8 +290,7 @@ function ResultForm({ onSuccess }: { onSuccess: () => void }) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault(); setLoading(true); setError("");
     try {
-      const res = await fetch("/api/results", { method: "POST", body: new FormData(e.currentTarget) });
-      if (!res.ok) throw new Error((await res.json()).error);
+      await apiPost("/api/results", new FormData(e.currentTarget));
       formRef.current?.reset(); onSuccess();
     } catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed"); }
     finally { setLoading(false); }

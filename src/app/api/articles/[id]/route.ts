@@ -52,7 +52,7 @@ export async function PUT(request: Request, ctx: RouteContext) {
     if (pdfFile && pdfFile.size > 0) {
       const upload = await saveUpload(pdfFile, 'pdf');
       pdfUrl   = upload.url;
-      fileSize = upload.fileSize;
+      fileSize = upload.size;
     }
 
     const updated: Article = {

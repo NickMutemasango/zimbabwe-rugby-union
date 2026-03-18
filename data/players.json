@@ -1,5 +1,41 @@
 [
   {
+    "id": "mmvsmn1tqi6dkc",
+    "name": "Tatenda Chinembiri",
+    "position": "Fullback",
+    "jerseyNumber": 15,
+    "club": "Harare Sports Club",
+    "age": 23,
+    "caps": 12,
+    "points": 55,
+    "profilePicture": "/uploads/images/1773823358511-mgjgfg.jpg",
+    "createdAt": "2026-03-18T08:42:38.513Z"
+  },
+  {
+    "id": "mmvsgkid7jyjmt",
+    "name": "Photo Test Player",
+    "position": "Prop",
+    "jerseyNumber": 55,
+    "club": "",
+    "age": 0,
+    "caps": 0,
+    "points": 0,
+    "profilePicture": "/uploads/images/1773823075280-h7ccly.jpg",
+    "createdAt": "2026-03-18T08:37:55.285Z"
+  },
+  {
+    "id": "mmvsfqqpst1qzn",
+    "name": "Test Player",
+    "position": "Prop",
+    "jerseyNumber": 99,
+    "club": "Test Club",
+    "age": 25,
+    "caps": 5,
+    "points": 10,
+    "profilePicture": null,
+    "createdAt": "2026-03-18T08:37:16.706Z"
+  },
+  {
     "id": "p001",
     "name": "Brendan Munyai",
     "position": "Fly-half",
