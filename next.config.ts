@@ -2,16 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // ── Images ──────────────────────────────────────────────────────────────────
-  // Allow Next.js <Image> to load Cloudinary URLs (uploaded player photos, etc.)
+  // Allow Next.js <Image> to load Vercel Blob URLs (uploaded player photos, etc.)
   images: {
     remotePatterns: [
       {
+        // Vercel Blob public storage
         protocol: "https",
-        hostname: "res.cloudinary.com",
+        hostname: "*.public.blob.vercel-storage.com",
         pathname: "/**",
       },
     ],
-    // Also allow unoptimized local uploads during local dev (e.g. /uploads/*)
     unoptimized: false,
   },
 

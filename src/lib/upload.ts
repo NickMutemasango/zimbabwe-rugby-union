@@ -1,10 +1,4 @@
-import { v2 as cloudinary } from 'cloudinary';
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { put } from '@vercel/blob';
 
 export type UploadType = 'image' | 'pdf';
 
@@ -46,26 +40,18 @@ export async function saveUpload(
     );
   }
 
-  const bytes        = await file.arrayBuffer();
-  const buffer       = Buffer.from(bytes);
-  const folder       = type === 'pdf' ? 'zru-pdfs' : 'zru-images';
-  const resourceType = (type === 'pdf' ? 'raw' : 'image') as 'raw' | 'image';
+  // Use a folder prefix in the pathname to keep files organised
+  const folder   = type === 'pdf' ? 'zru-pdfs' : 'zru-images';
+  const pathname = `${folder}/${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
 
-  return new Promise<UploadResult>((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder, resource_type: resourceType, use_filename: true },
-      (error, result) => {
-        if (error || !result) {
-          reject(error ?? new Error('Cloudinary upload failed'));
-        } else {
-          resolve({
-            url:      result.secure_url,
-            filename: result.public_id,
-            size:     formatSize(result.bytes),
-          });
-        }
-      }
-    );
-    stream.end(buffer);
+  const blob = await put(pathname, file, {
+    access:      'public',
+    contentType: file.type,
   });
+
+  return {
+    url:      blob.url,
+    filename: blob.pathname,
+    size:     formatSize(file.size),
+  };
 }
