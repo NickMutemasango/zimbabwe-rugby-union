@@ -1,11 +1,11 @@
-import { readDb, type NewsArticle } from "@/lib/db";
+import { findAll, type NewsArticle } from "@/lib/db";
 import NewsGrid from "@/components/news/NewsGrid";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export const dynamic = "force-dynamic";
 
-export default function NewsPage() {
-  const news = readDb<NewsArticle>("news");
+export default async function NewsPage() {
+  const news = await findAll<NewsArticle>("news");
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

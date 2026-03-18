@@ -1,104 +1,69 @@
 import { NextResponse } from 'next/server';
-import { readDb, writeDb, type Player } from '@/lib/db';
+import { findById, updateDoc, deleteDoc, type Player } from '@/lib/db';
 import { saveUpload } from '@/lib/upload';
 
-type RouteContext = { params: Promise<{ id: string }> };
+type Ctx = { params: Promise<{ id: string }> };
 
-// ── GET /api/players/:id ─────────────────────────────────────────────────────
-export async function GET(_req: Request, ctx: RouteContext) {
+export async function GET(_req: Request, ctx: Ctx) {
   const { id } = await ctx.params;
-  const players = readDb<Player>('players');
-  const player = players.find((p) => p.id === id);
-
-  if (!player) {
-    return NextResponse.json({ error: 'Player not found' }, { status: 404 });
+  try {
+    const player = await findById<Player>('players', id);
+    if (!player) return NextResponse.json({ error: 'Player not found' }, { status: 404 });
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[API] GET /api/players/${id} → name:`, player.name, '| photo:', player.profilePicture ?? '(none)');
+    }
+    return NextResponse.json(player);
+  } catch (err: unknown) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Server error' }, { status: 500 });
   }
-
-  // Dev helper: log when fetched by ID
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`[API] GET /api/players/${id} →`, {
-      id: player.id,
-      name: player.name,
-      profilePicture: player.profilePicture ?? '(none)',
-    });
-  }
-
-  return NextResponse.json(player);
 }
 
-// ── PUT /api/players/:id ─────────────────────────────────────────────────────
-// Accepts multipart/form-data — all fields optional (partial update)
-export async function PUT(request: Request, ctx: RouteContext) {
+export async function PUT(request: Request, ctx: Ctx) {
   const { id } = await ctx.params;
-  const players = readDb<Player>('players');
-  const index = players.findIndex((p) => p.id === id);
-
-  if (index === -1) {
-    return NextResponse.json({ error: 'Player not found' }, { status: 404 });
-  }
-
   try {
-    const formData = await request.formData();
+    const existing = await findById<Player>('players', id);
+    if (!existing) return NextResponse.json({ error: 'Player not found' }, { status: 404 });
 
-    const name        = (formData.get('name')         as string) || players[index].name;
-    const position    = (formData.get('position')     as string) || players[index].position;
-    const jerseyNumber = formData.get('jerseyNumber')
-      ? Number(formData.get('jerseyNumber'))
-      : players[index].jerseyNumber;
-    const club   = (formData.get('club')   as string) ?? players[index].club;
-    const age    = formData.get('age')    ? Number(formData.get('age'))    : players[index].age;
-    const caps   = formData.get('caps')   ? Number(formData.get('caps'))   : players[index].caps;
-    const points = formData.get('points') ? Number(formData.get('points')) : players[index].points;
+    const formData     = await request.formData();
+    const name         = (formData.get('name')         as string) || existing.name;
+    const position     = (formData.get('position')     as string) || existing.position;
+    const jerseyNumber = formData.get('jerseyNumber') ? Number(formData.get('jerseyNumber')) : existing.jerseyNumber;
+    const club         = (formData.get('club')   as string) ?? existing.club;
+    const age          = formData.get('age')    ? Number(formData.get('age'))    : existing.age;
+    const caps         = formData.get('caps')   ? Number(formData.get('caps'))   : existing.caps;
+    const points       = formData.get('points') ? Number(formData.get('points')) : existing.points;
 
-    // Handle optional new photo upload
-    let profilePicture = players[index].profilePicture;
-    const imageFile = formData.get('profilePicture') as File | null;
+    let profilePicture = existing.profilePicture;
+    const imageFile    = formData.get('profilePicture') as File | null;
     if (imageFile && imageFile.size > 0) {
-      const upload = await saveUpload(imageFile, 'image');
+      const upload   = await saveUpload(imageFile, 'image');
       profilePicture = upload.url;
     }
 
-    const updated: Player = {
-      ...players[index],
-      name,
-      position,
-      jerseyNumber,
-      club,
-      age,
-      caps,
-      points,
-      profilePicture,
-    };
-
-    players[index] = updated;
-    writeDb('players', players);
+    const updated = await updateDoc<Player>('players', id, {
+      name, position, jerseyNumber, club, age, caps, points, profilePicture,
+    });
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[API] PUT /api/players/${id} → updated`, {
-        id: updated.id,
-        name: updated.name,
-        profilePicture: updated.profilePicture ?? '(none)',
-      });
+      console.log(`[API] PUT /api/players/${id} → photo:`, updated?.profilePicture ?? '(none)');
     }
 
     return NextResponse.json(updated);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Server error';
+    console.error(`[API] PUT /api/players/${id} error:`, message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
-// ── DELETE /api/players/:id ──────────────────────────────────────────────────
-export async function DELETE(_req: Request, ctx: RouteContext) {
+export async function DELETE(_req: Request, ctx: Ctx) {
   const { id } = await ctx.params;
-  const players = readDb<Player>('players');
-  const filtered = players.filter((p) => p.id !== id);
-
-  if (filtered.length === players.length) {
-    return NextResponse.json({ error: 'Player not found' }, { status: 404 });
+  try {
+    const deleted = await deleteDoc('players', id);
+    if (!deleted) return NextResponse.json({ error: 'Player not found' }, { status: 404 });
+    if (process.env.NODE_ENV !== 'production') console.log(`[API] DELETE /api/players/${id}`);
+    return NextResponse.json({ success: true });
+  } catch (err: unknown) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Server error' }, { status: 500 });
   }
-
-  writeDb('players', filtered);
-  console.log(`[API] DELETE /api/players/${id}`);
-  return NextResponse.json({ success: true });
 }

@@ -1,11 +1,11 @@
-import { readDb, type Article } from "@/lib/db";
+import { findAll, type Article } from "@/lib/db";
 import ArticlesGrid from "@/components/articles/ArticlesGrid";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export const dynamic = "force-dynamic";
 
-export default function ArticlesPage() {
-  const articles = readDb<Article>("articles");
+export default async function ArticlesPage() {
+  const articles = await findAll<Article>("articles");
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

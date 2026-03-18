@@ -1,11 +1,11 @@
-import { readDb, type Player } from "@/lib/db";
+import { findAll, type Player } from "@/lib/db";
 import PlayerGrid from "@/components/players/PlayerGrid";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export const dynamic = "force-dynamic";
 
-export default function PlayersPage() {
-  const players = readDb<Player>("players");
+export default async function PlayersPage() {
+  const players = await findAll<Player>("players");
   return (
     <div className="min-h-screen bg-white pt-28 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,7 +20,10 @@ export default function PlayersPage() {
               <span className="text-3xl">🏉</span>
             </div>
             <p className="text-gray-400 font-medium">No players yet.</p>
-            <p className="text-gray-300 text-sm mt-1">Add squad members via the <a href="/admin/update" className="text-[#006B3F] underline underline-offset-2">Admin Portal</a>.</p>
+            <p className="text-gray-300 text-sm mt-1">
+              Add squad members via the{" "}
+              <a href="/admin/update" className="text-[#006B3F] underline underline-offset-2">Admin Portal</a>.
+            </p>
           </div>
         ) : (
           <PlayerGrid players={players} editable={false} />

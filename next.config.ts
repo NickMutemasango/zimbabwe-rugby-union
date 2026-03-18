@@ -1,29 +1,25 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // ── Images: allow Next.js <Image> to serve /public/uploads/* without
-  //    optimization pipeline errors (user-uploaded files, not remote URLs)
+  // ── Images ──────────────────────────────────────────────────────────────────
+  // Allow Next.js <Image> to load Cloudinary URLs (uploaded player photos, etc.)
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+    ],
+    // Also allow unoptimized local uploads during local dev (e.g. /uploads/*)
+    unoptimized: false,
   },
 
-  // ── Upload body-size limits for Server Actions ────────────────────────────
+  // ── Body-size limit for multipart form uploads (Server Actions) ─────────────
   experimental: {
     serverActions: {
       bodySizeLimit: "20mb",
     },
-  },
-
-  // ── Static cache headers for uploaded files ───────────────────────────────
-  async headers() {
-    return [
-      {
-        source: "/uploads/:path*",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
-    ];
   },
 };
 

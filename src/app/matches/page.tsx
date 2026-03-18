@@ -1,12 +1,12 @@
-import { readDb, type Fixture, type Result } from "@/lib/db";
+import { findAll, type Fixture, type Result } from "@/lib/db";
 import MatchesClient from "@/components/matches/MatchesClient";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export const dynamic = "force-dynamic";
 
-export default function MatchesPage() {
-  const fixtures = readDb<Fixture>("fixtures");
-  const results = readDb<Result>("results");
+export default async function MatchesPage() {
+  const fixtures = await findAll<Fixture>("fixtures");
+  const results  = await findAll<Result>("results");
   return (
     <div className="min-h-screen bg-white pt-28 pb-20">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
