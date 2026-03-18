@@ -1,13 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Allow larger file uploads through Route Handlers (images + PDFs)
+  // ── Images: allow Next.js <Image> to serve /public/uploads/* without
+  //    optimization pipeline errors (user-uploaded files, not remote URLs)
+  images: {
+    unoptimized: true,
+  },
+
+  // ── Upload body-size limits for Server Actions ────────────────────────────
   experimental: {
     serverActions: {
       bodySizeLimit: "20mb",
     },
   },
-  // Serve uploaded files from /public/uploads
+
+  // ── Static cache headers for uploaded files ───────────────────────────────
   async headers() {
     return [
       {

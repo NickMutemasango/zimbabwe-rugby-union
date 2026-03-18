@@ -68,7 +68,15 @@ function EditPlayerModal({
 
     try {
       const res  = await fetch(`/api/players/${player.id}`, { method: "PUT", body: fd });
-      const data = await res.json();
+
+      // ── Safe parse: res.json() on an HTML error page throws "Unexpected token '<'"
+      const text = await res.text();
+      let data: Record<string, unknown> = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Server error (HTTP ${res.status}). Check terminal for details.`);
+      }
 
       // ── DEV console logging ────────────────────────────────────────────────
       if (process.env.NODE_ENV !== "production") {
@@ -81,9 +89,9 @@ function EditPlayerModal({
         console.groupEnd();
       }
 
-      if (!res.ok) throw new Error(data.error || "Save failed");
+      if (!res.ok) throw new Error((data.error as string) || `HTTP ${res.status}`);
       setStatus("success");
-      setTimeout(() => { onSaved(data as Player); onClose(); }, 700);
+      setTimeout(() => { onSaved(data as unknown as Player); onClose(); }, 700);
     } catch (err) {
       setErrMsg(err instanceof Error ? err.message : "Unknown error");
       setStatus("error");
