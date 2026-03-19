@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -29,25 +30,37 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
+  const [scrolled, setScrolled] = useState(!isHome);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   useEffect(() => {
+    // Non-home pages are always "solid" — reset state when route changes
+    if (!isHome) {
+      setScrolled(true);
+      return;
+    }
+    setScrolled(window.scrollY > 60);
     const handler = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", handler);
+    window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
-  }, []);
+  }, [isHome]);
 
-  const logoTextColor = scrolled ? "text-[#0A1628]" : "text-white";
-  const logoSubColor = scrolled ? "text-[#006B3F]" : "text-[#D4AF37]";
-  const linkColor = scrolled ? "text-gray-600 hover:text-[#006B3F]" : "text-white/80 hover:text-white";
-  const linkHoverBg = scrolled ? "hover:bg-gray-50" : "hover:bg-white/5";
+  // solid = white navbar; transparent = hero overlay mode (home only)
+  const solid = scrolled || !isHome;
+
+  const logoTextColor = solid ? "text-[#0A1628]" : "text-white";
+  const logoSubColor  = solid ? "text-[#006B3F]"  : "text-[#D4AF37]";
+  const linkColor     = solid ? "text-gray-600 hover:text-[#006B3F]" : "text-white/80 hover:text-white";
+  const linkHoverBg   = solid ? "hover:bg-gray-50" : "hover:bg-white/5";
 
   return (
     <nav
-      className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        solid
           ? "bg-white/95 backdrop-blur-md shadow-md shadow-black/10 border-b border-gray-100"
           : "bg-transparent"
       }`}
@@ -113,20 +126,20 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* CTA — Donate only, no Admin */}
+          {/* CTA */}
           <div className="hidden lg:flex items-center">
             <Link
               href="/donate"
               className="px-5 py-2 bg-[#006B3F] hover:bg-[#004D2C] text-white rounded-lg text-sm font-bold transition-all hover:shadow-lg hover:shadow-[#006B3F]/30 hover:-translate-y-0.5"
             >
-              Support the Sables
+              Donate
             </Link>
           </div>
 
           {/* Mobile Toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className={`lg:hidden p-2 rounded-lg transition-colors ${scrolled ? "text-gray-700 hover:bg-gray-100" : "text-white hover:bg-white/10"}`}
+            className={`lg:hidden p-2 rounded-lg transition-colors ${solid ? "text-gray-700 hover:bg-gray-100" : "text-white hover:bg-white/10"}`}
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -165,8 +178,9 @@ export default function Navbar() {
                 </div>
               ))}
               <div className="pt-3 border-t border-gray-100">
-                <Link href="/donate" onClick={() => setMobileOpen(false)} className="block px-4 py-3 text-center bg-[#006B3F] text-white rounded-lg font-bold">
-                  Support the Sables
+                <Link href="/donate" onClick={() => setMobileOpen(false)}
+                  className="block px-4 py-3 text-center bg-[#006B3F] text-white rounded-lg font-bold">
+                  Donate
                 </Link>
               </div>
             </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar, Tag, ArrowRight } from "lucide-react";
 import type { NewsArticle } from "@/lib/db";
 
@@ -16,9 +17,19 @@ function NewsCard({ article, index, featured = false }: { article: NewsArticle; 
     >
       {/* Image area */}
       <div className={`relative overflow-hidden bg-gradient-to-br from-[#006B3F]/20 to-[#0A1628]/30 ${featured ? "h-56" : "h-44"}`}>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-6xl opacity-20">🏉</div>
-        </div>
+        {article.featuredImage ? (
+          <Image
+            src={article.featuredImage}
+            alt={article.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes={featured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-6xl opacity-20">🏉</div>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A1628]/60 to-transparent" />
         <div className="absolute top-3 left-3">
           <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#006B3F] text-white text-[10px] font-bold uppercase tracking-wider rounded-md">
@@ -70,31 +81,9 @@ export default function NewsSection() {
     fetch("/api/news")
       .then((r) => r.json())
       .then((data: unknown) => {
-        const list = Array.isArray(data) ? (data as NewsArticle[]) : [];
-
-        // ── DEV: log API response + field mapping ──────────────────────────
-        if (process.env.NODE_ENV !== "production") {
-          console.group("%c[NewsSection] GET /api/news", "color:#22c55e;font-weight:bold");
-          console.log(`Received ${list.length} article(s)`);
-          console.table(
-            list.map((a) => ({
-              id:            a.id,
-              title:         a.title,
-              category:      a.category,
-              date:          a.date,
-              featuredImage: a.featuredImage ?? "(none — gradient placeholder shown)",
-            }))
-          );
-          console.groupEnd();
-        }
-
-        setNews(list);
+        setNews(Array.isArray(data) ? (data as NewsArticle[]) : []);
       })
-      .catch((err) => {
-        if (process.env.NODE_ENV !== "production")
-          console.error("[NewsSection] Failed to fetch /api/news:", err);
-        setNews([]);
-      })
+      .catch(() => setNews([]))
       .finally(() => setLoading(false));
   }, []);
 

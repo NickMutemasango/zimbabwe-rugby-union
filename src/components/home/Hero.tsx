@@ -3,105 +3,89 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Play, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
-// 3 hero backgrounds — each is a gradient + SVG pattern overlay
-const HERO_BACKGROUNDS = [
+const SLIDES = [
   {
     id: 0,
-    // Deep green: game-day pitch feel
-    gradient: "linear-gradient(135deg, #003822 0%, #006B3F 45%, #0A2818 100%)",
-    pattern: `radial-gradient(circle at 20% 50%, rgba(212,175,55,0.08) 0%, transparent 50%),
-               radial-gradient(circle at 80% 20%, rgba(0,107,63,0.3) 0%, transparent 40%)`,
+    bg: "/Backgrounds/Background1.jpg",
     title: "HOME OF",
     accent: "THE SABLES",
     tagline: "Follow Zimbabwe's national rugby team as they battle for glory on the continental and world stage.",
   },
   {
     id: 1,
-    // Night stadium: deep navy-blue with gold glow
-    gradient: "linear-gradient(135deg, #050D1A 0%, #0A1F3D 50%, #0D2B1A 100%)",
-    pattern: `radial-gradient(ellipse at 70% 30%, rgba(212,175,55,0.15) 0%, transparent 55%),
-               radial-gradient(ellipse at 20% 70%, rgba(0,107,63,0.2) 0%, transparent 45%)`,
+    bg: "/Backgrounds/Background2.jpg",
     title: "ONE NATION",
     accent: "ONE TEAM",
     tagline: "Representing Zimbabwe with pride, passion and purpose. The Sables never back down.",
   },
   {
     id: 2,
-    // Championship gold dusk: dark maroon fading to gold
-    gradient: "linear-gradient(135deg, #1A0A05 0%, #2D1200 40%, #0A1628 100%)",
-    pattern: `radial-gradient(ellipse at 60% 40%, rgba(212,175,55,0.2) 0%, transparent 50%),
-               radial-gradient(ellipse at 10% 60%, rgba(180,100,0,0.15) 0%, transparent 45%)`,
+    bg: "/Backgrounds/Background3.jpg",
     title: "BOUND FOR",
     accent: "GLORY",
     tagline: "Zimbabwe Rugby — chasing the World Cup dream and developing champions from grassroots up.",
   },
 ];
 
-const MAX_CYCLES = 3; // Change images 3 times then stop
 const INTERVAL_MS = 5000;
 
 export default function Hero() {
   const [current, setCurrent] = useState(0);
-  const [cycleCount, setCycleCount] = useState(0);
-  const [stopped, setStopped] = useState(false);
 
   useEffect(() => {
-    if (stopped) return;
     const timer = setInterval(() => {
-      setCurrent((prev) => {
-        const next = (prev + 1) % HERO_BACKGROUNDS.length;
-        // Each time we wrap back to 0, it's one full cycle
-        if (next === 0) {
-          setCycleCount((c) => {
-            const newCount = c + 1;
-            if (newCount >= MAX_CYCLES) {
-              setStopped(true);
-            }
-            return newCount;
-          });
-        }
-        return next;
-      });
+      setCurrent((prev) => (prev + 1) % SLIDES.length);
     }, INTERVAL_MS);
     return () => clearInterval(timer);
-  }, [stopped]);
+  }, []);
 
-  const bg = HERO_BACKGROUNDS[current];
+  const slide = SLIDES[current];
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Cycling background layers */}
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={current}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2 }}
-          className="absolute inset-0"
-          style={{ background: bg.gradient }}
-        >
-          {/* Pattern overlay */}
-          <div className="absolute inset-0" style={{ background: bg.pattern }} />
-          {/* Noise texture */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-              backgroundSize: "200px 200px",
-            }}
-          />
-          {/* Grid pattern */}
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)`,
-              backgroundSize: "60px 60px",
-            }}
-          />
-        </motion.div>
-      </AnimatePresence>
+
+      {/* ── Desktop/Tablet: cycling background images ── */}
+      <div className="absolute inset-0 hidden sm:block">
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2 }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={slide.bg}
+              alt="Hero background"
+              fill
+              priority
+              className="object-cover object-center"
+              sizes="100vw"
+            />
+          </motion.div>
+        </AnimatePresence>
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-[#0A1628]/60" />
+        {/* Subtle green gradient tint */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#006B3F]/20 via-transparent to-[#0A1628]/40" />
+      </div>
+
+      {/* ── Mobile: fixed background image ── */}
+      <div className="absolute inset-0 block sm:hidden">
+        <Image
+          src="/Backgrounds/BackgroundSmall1.jpg"
+          alt="Hero background"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[#0A1628]/65" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#006B3F]/15 to-[#0A1628]/50" />
+      </div>
 
       {/* Decorative rugby ball shapes */}
       <div className="absolute right-8 top-1/4 w-72 h-72 border-2 border-white/10 rounded-[50%] rotate-45 hidden lg:block pointer-events-none" />
@@ -124,7 +108,7 @@ export default function Hero() {
             <span className="text-white text-xs font-bold tracking-widest uppercase">Official Zimbabwe Rugby Union</span>
           </motion.div>
 
-          {/* Headline */}
+          {/* Headline — animates with each slide */}
           <AnimatePresence mode="wait">
             <motion.div
               key={current}
@@ -134,14 +118,14 @@ export default function Hero() {
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-white leading-none tracking-tight mb-4">
-                {bg.title}
+                {slide.title}
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#006B3F] to-[#D4AF37]">
-                  {bg.accent}
+                  {slide.accent}
                 </span>
               </h1>
-              <p className="text-white/70 text-lg sm:text-xl leading-relaxed mb-10 max-w-2xl">
-                {bg.tagline}
+              <p className="text-white/80 text-lg sm:text-xl leading-relaxed mb-10 max-w-2xl">
+                {slide.tagline}
               </p>
             </motion.div>
           </AnimatePresence>
@@ -189,14 +173,14 @@ export default function Hero() {
             ))}
           </motion.div>
 
-          {/* Image indicator dots */}
+          {/* Slide indicator dots */}
           <div className="flex gap-2 mt-10">
-            {HERO_BACKGROUNDS.map((_, i) => (
+            {SLIDES.map((_, i) => (
               <button
                 key={i}
-                onClick={() => { setCurrent(i); }}
-                className={`h-1 rounded-full transition-all duration-300 ${
-                  i === current ? "w-8 bg-[#D4AF37]" : "w-2 bg-white/30"
+                onClick={() => setCurrent(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === current ? "w-8 bg-[#D4AF37]" : "w-2 bg-white/30 hover:bg-white/50"
                 }`}
               />
             ))}

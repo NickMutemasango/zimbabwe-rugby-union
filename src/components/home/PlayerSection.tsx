@@ -13,40 +13,44 @@ function PlayerCard({ player, index }: { player: Player; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.08 }}
-      className="group relative bg-[#0A1628] border border-white/5 rounded-2xl overflow-hidden cursor-pointer hover:border-[#006B3F]/50 transition-all hover:shadow-2xl hover:shadow-[#006B3F]/20"
+      className="group relative bg-[#0A1628] border border-white/10 rounded-2xl overflow-hidden cursor-pointer hover:border-[#D4AF37]/50 transition-all hover:shadow-2xl hover:shadow-[#006B3F]/20"
     >
-      <div className="relative h-48 bg-gradient-to-b from-[#006B3F]/20 to-[#0A1628] overflow-hidden">
-        {/* Background jersey number watermark */}
-        <span className="absolute inset-0 flex items-center justify-center text-8xl font-black text-white/[0.04] select-none pointer-events-none">
+      <div className="relative h-56 bg-gradient-to-b from-[#006B3F]/30 to-[#0A1628] overflow-hidden">
+        {/* Jersey number watermark */}
+        <span className="absolute inset-0 flex items-center justify-center text-9xl font-black text-white/[0.05] select-none pointer-events-none">
           {player.jerseyNumber}
         </span>
-        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-[#0A1628] to-transparent" />
-        <div className="absolute top-4 right-4 w-10 h-10 bg-[#D4AF37] rounded-full flex items-center justify-center shadow">
-          <span className="text-[#050D1A] font-black text-xs">#{player.jerseyNumber}</span>
+
+        {/* Jersey badge */}
+        <div className="absolute top-3 right-3 w-9 h-9 bg-[#D4AF37] rounded-full flex items-center justify-center shadow-lg z-10">
+          <span className="text-[#050D1A] font-black text-[10px]">#{player.jerseyNumber}</span>
         </div>
 
-        {/* ── Profile picture or fallback avatar ── */}
-        <div className="absolute inset-0 flex items-center justify-center">
+        {/* ── Profile picture ── */}
+        <div className="absolute inset-0 flex items-end justify-center pb-3">
           {player.profilePicture ? (
-            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#006B3F]/60 shadow-lg relative">
+            <div className="relative w-36 h-36 rounded-2xl overflow-hidden border-2 border-[#D4AF37]/60 shadow-2xl"
+              style={{ filter: "brightness(1.08) contrast(1.05)" }}>
               <Image
                 src={player.profilePicture}
                 alt={player.name}
                 fill
-                className="object-cover"
+                className="object-cover object-top"
                 unoptimized={player.profilePicture.startsWith("/uploads")}
-                onError={() => {
-                  if (process.env.NODE_ENV !== "production")
-                    console.warn(`[PlayerSection] profile_picture failed for "${player.name}":`, player.profilePicture);
-                }}
+                sizes="144px"
               />
+              {/* Subtle bottom fade */}
+              <div className="absolute bottom-0 inset-x-0 h-1/4 bg-gradient-to-t from-[#0A1628]/40 to-transparent" />
             </div>
           ) : (
-            <div className="w-20 h-20 bg-[#006B3F]/20 rounded-full border-2 border-[#006B3F]/30 flex items-center justify-center">
-              <User size={28} className="text-[#006B3F]" />
+            <div className="w-28 h-28 bg-[#006B3F]/25 rounded-2xl border-2 border-[#006B3F]/40 flex items-center justify-center">
+              <User size={36} className="text-[#006B3F]" />
             </div>
           )}
         </div>
+
+        {/* Bottom fade */}
+        <div className="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-[#0A1628] to-transparent" />
 
         {/* Hover quick-stats overlay */}
         <div className="absolute inset-0 bg-[#006B3F]/93 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-3 p-4">
@@ -85,7 +89,7 @@ function PlayerCard({ player, index }: { player: Player; index: number }) {
 function SkeletonCard() {
   return (
     <div className="bg-[#0A1628] border border-white/5 rounded-2xl overflow-hidden animate-pulse">
-      <div className="h-48 bg-white/5" />
+      <div className="h-56 bg-white/5" />
       <div className="p-4 space-y-2">
         <div className="h-3 bg-white/10 rounded w-3/4" />
         <div className="h-3 bg-white/10 rounded w-1/2" />
@@ -102,30 +106,9 @@ export default function PlayerSection() {
     fetch("/api/players")
       .then((r) => r.json())
       .then((data: unknown) => {
-        const list = Array.isArray(data) ? (data as Player[]) : [];
-
-        // ── DEV: log API response + field mapping ──────────────────────────
-        if (process.env.NODE_ENV !== "production") {
-          console.group("%c[PlayerSection] GET /api/players", "color:#22c55e;font-weight:bold");
-          console.log(`Received ${list.length} player(s)`);
-          console.table(
-            list.map((p) => ({
-              id:              p.id,
-              name:            p.name,
-              position:        p.position,
-              profile_picture: p.profilePicture ?? "(none — avatar shown)",
-            }))
-          );
-          console.groupEnd();
-        }
-
-        setPlayers(list);
+        setPlayers(Array.isArray(data) ? (data as Player[]) : []);
       })
-      .catch((err) => {
-        if (process.env.NODE_ENV !== "production")
-          console.error("[PlayerSection] Failed to fetch /api/players:", err);
-        setPlayers([]);
-      })
+      .catch(() => setPlayers([]))
       .finally(() => setLoading(false));
   }, []);
 
