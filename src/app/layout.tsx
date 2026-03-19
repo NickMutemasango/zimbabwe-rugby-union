@@ -3,7 +3,6 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import StickyTicker from "@/components/layout/StickyTicker";
 import CountdownModal from "@/components/modals/CountdownModal";
 
 const geist = Geist({ subsets: ["latin"] });
@@ -23,7 +22,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body className={geist.className}>
-        <StickyTicker />
         <Navbar />
         <main>{children}</main>
         <Footer />
