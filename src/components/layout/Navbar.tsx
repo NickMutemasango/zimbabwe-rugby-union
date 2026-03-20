@@ -7,14 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
-  {
-    label: "The Sables",
-    href: "#",
-    children: [
-      { label: "Player Profiles", href: "/players" },
-      { label: "Coaching Staff", href: "/players#coaching" },
-    ],
-  },
+  { label: "The Sables", href: "/players" },
   {
     label: "Matches",
     href: "#",
