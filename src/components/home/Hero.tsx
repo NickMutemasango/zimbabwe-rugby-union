@@ -44,7 +44,7 @@ export default function Hero() {
   const slide = SLIDES[current];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center overflow-hidden">
 
       {/* ── Desktop/Tablet: cycling background images ── */}
       <div className="absolute inset-0 hidden sm:block">
@@ -67,9 +67,7 @@ export default function Hero() {
             />
           </motion.div>
         </AnimatePresence>
-        {/* Dark overlay for readability */}
         <div className="absolute inset-0 bg-[#0A1628]/60" />
-        {/* Subtle green gradient tint */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#006B3F]/20 via-transparent to-[#0A1628]/40" />
       </div>
 
@@ -87,16 +85,17 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#006B3F]/15 to-[#0A1628]/50" />
       </div>
 
-      {/* Decorative rugby ball shapes */}
+      {/* Decorative right-side shapes */}
       <div className="absolute right-8 top-1/4 w-72 h-72 border-2 border-white/10 rounded-[50%] rotate-45 hidden lg:block pointer-events-none" />
       <div className="absolute right-24 top-1/3 w-44 h-44 border border-white/8 rounded-[50%] rotate-45 hidden lg:block pointer-events-none" />
 
-      {/* Bottom gradient into white */}
+      {/* Bottom fade to white */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
 
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-24">
-        <div className="max-w-3xl">
+      {/* ── Content — left-aligned, matching navbar logo padding ── */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+        <div className="max-w-2xl">
+
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -108,7 +107,7 @@ export default function Hero() {
             <span className="text-white text-xs font-bold tracking-widest uppercase">Official Zimbabwe Rugby Union</span>
           </motion.div>
 
-          {/* Headline — animates with each slide */}
+          {/* Headline */}
           <AnimatePresence mode="wait">
             <motion.div
               key={current}
@@ -124,7 +123,7 @@ export default function Hero() {
                   {slide.accent}
                 </span>
               </h1>
-              <p className="text-white/80 text-lg sm:text-xl leading-relaxed mb-10 max-w-2xl">
+              <p className="text-white/80 text-lg sm:text-xl leading-relaxed mb-10 max-w-xl">
                 {slide.tagline}
               </p>
             </motion.div>
@@ -153,7 +152,7 @@ export default function Hero() {
             </Link>
           </motion.div>
 
-          {/* Stats */}
+          {/* Stats row */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -161,9 +160,9 @@ export default function Hero() {
             className="mt-16 flex flex-wrap gap-8"
           >
             {[
-              { value: "1895", label: "Founded" },
-              { value: "120+", label: "Years of Rugby" },
-              { value: "34", label: "Capped Players" },
+              { value: "1895",      label: "Founded" },
+              { value: "120+",      label: "Years of Rugby" },
+              { value: "34",        label: "Capped Players" },
               { value: "World Cup", label: "Qualified 4 Times" },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col">
@@ -173,7 +172,7 @@ export default function Hero() {
             ))}
           </motion.div>
 
-          {/* Slide indicator dots */}
+          {/* Slide dots */}
           <div className="flex gap-2 mt-10">
             {SLIDES.map((_, i) => (
               <button
@@ -188,12 +187,12 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — left-aligned with content */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute bottom-12 left-4 sm:left-6 lg:left-8 flex flex-col items-start gap-2"
       >
         <span className="text-white/30 text-[10px] tracking-widest uppercase">Scroll</span>
         <motion.div
