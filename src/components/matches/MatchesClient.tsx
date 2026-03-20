@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Calendar, MapPin, Clock, Trophy } from "lucide-react";
 import type { Fixture, Result } from "@/lib/db";
 
-type Tab = "all" | "fixtures" | "results";
+type Tab = "all" | "fixtures" | "results" | "standings";
 
 // ── Standings calculator ──────────────────────────────────────────────────────
 interface TeamStat {
@@ -112,23 +112,45 @@ export default function MatchesClient({ fixtures, results }: { fixtures: Fixture
 
   const showFixtures = tab === "all" || tab === "fixtures";
   const showResults  = tab === "all" || tab === "results";
+  const showStandings = tab === "standings";
+
+  const TABS: { value: Tab; label: string }[] = [
+    { value: "all",       label: "All"       },
+    { value: "fixtures",  label: "Fixtures"  },
+    { value: "results",   label: "Results"   },
+    { value: "standings", label: "Standings" },
+  ];
 
   return (
-    <div className="lg:grid lg:grid-cols-3 lg:gap-8 space-y-8 lg:space-y-0">
+    <div className={showStandings ? undefined : "lg:grid lg:grid-cols-3 lg:gap-8 space-y-8 lg:space-y-0"}>
 
-      {/* ── Left: Fixtures + Results ── */}
-      <div className="lg:col-span-2">
+      {/* ── Left: Fixtures + Results (or full-width Standings) ── */}
+      <div className={showStandings ? undefined : "lg:col-span-2"}>
         {/* Filter tabs */}
         <div className="flex gap-2 mb-8 p-1 bg-gray-100 rounded-xl w-fit">
-          {(["all", "fixtures", "results"] as Tab[]).map((f) => (
-            <button key={f} onClick={() => setTab(f)}
+          {TABS.map(({ value, label }) => (
+            <button key={value} onClick={() => setTab(value)}
               className={`px-5 py-2 rounded-lg text-sm font-bold capitalize transition-all ${
-                tab === f ? "bg-[#006B3F] text-white shadow-lg shadow-[#006B3F]/30" : "text-gray-500 hover:text-gray-800"
+                tab === value ? "bg-[#006B3F] text-white shadow-lg shadow-[#006B3F]/30" : "text-gray-500 hover:text-gray-800"
               }`}>
-              {f === "fixtures" ? "Fixtures" : f === "results" ? "Results" : "All"}
+              {label}
             </button>
           ))}
         </div>
+
+        {/* Standings view (full-width when tab === "standings") */}
+        {showStandings && (
+          <motion.div key="standings" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            {results.length > 0 ? (
+              <Standings results={results} />
+            ) : (
+              <div className="bg-[#0A1628] border border-white/5 rounded-2xl p-16 text-center">
+                <Trophy size={32} className="text-white/10 mx-auto mb-4" />
+                <p className="text-white/30 text-sm">Standings will appear once results are added.</p>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         <div className="space-y-4">
           {/* Upcoming Fixtures */}
@@ -222,18 +244,20 @@ export default function MatchesClient({ fixtures, results }: { fixtures: Fixture
         </div>
       </div>
 
-      {/* ── Right: Standings ── */}
-      <div className="lg:col-span-1">
-        <p className="text-[#006B3F] text-xs font-bold uppercase tracking-widest mb-4">League Standings</p>
-        {results.length > 0 ? (
-          <Standings results={results} />
-        ) : (
-          <div className="bg-[#0A1628] border border-white/5 rounded-2xl p-8 text-center">
-            <Trophy size={28} className="text-white/10 mx-auto mb-3" />
-            <p className="text-white/30 text-sm">Standings will appear once results are added.</p>
-          </div>
-        )}
-      </div>
+      {/* ── Right: Standings sidebar (hidden when standings tab is active) ── */}
+      {!showStandings && (
+        <div className="lg:col-span-1">
+          <p className="text-[#006B3F] text-xs font-bold uppercase tracking-widest mb-4">League Standings</p>
+          {results.length > 0 ? (
+            <Standings results={results} />
+          ) : (
+            <div className="bg-[#0A1628] border border-white/5 rounded-2xl p-8 text-center">
+              <Trophy size={28} className="text-white/10 mx-auto mb-3" />
+              <p className="text-white/30 text-sm">Standings will appear once results are added.</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
