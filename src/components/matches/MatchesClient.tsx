@@ -122,10 +122,10 @@ export default function MatchesClient({ fixtures, results }: { fixtures: Fixture
   ];
 
   return (
-    <div className={showStandings ? undefined : "lg:grid lg:grid-cols-3 lg:gap-8 space-y-8 lg:space-y-0"}>
+    <div>
 
-      {/* ── Left: Fixtures + Results (or full-width Standings) ── */}
-      <div className={showStandings ? undefined : "lg:col-span-2"}>
+      {/* ── Fixtures + Results (or full-width Standings) ── */}
+      <div>
         {/* Filter tabs */}
         <div className="flex gap-2 mb-8 p-1 bg-gray-100 rounded-xl w-fit">
           {TABS.map(({ value, label }) => (
@@ -245,19 +245,6 @@ export default function MatchesClient({ fixtures, results }: { fixtures: Fixture
       </div>
 
       {/* ── Right: Standings sidebar (hidden when standings tab is active) ── */}
-      {!showStandings && (
-        <div className="lg:col-span-1">
-          <p className="text-[#006B3F] text-xs font-bold uppercase tracking-widest mb-4">League Standings</p>
-          {results.length > 0 ? (
-            <Standings results={results} />
-          ) : (
-            <div className="bg-[#0A1628] border border-white/5 rounded-2xl p-8 text-center">
-              <Trophy size={28} className="text-white/10 mx-auto mb-3" />
-              <p className="text-white/30 text-sm">Standings will appear once results are added.</p>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }
