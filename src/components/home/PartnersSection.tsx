@@ -2,15 +2,150 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 
+// ─── Brand-styled logo components ────────────────────────────────────────────
+
+function CfaoLogo() {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="flex items-center gap-1.5">
+        <div className="w-3.5 h-3.5 rounded-full bg-red-500 shadow-sm" />
+        <span className="font-black text-xl text-gray-800 tracking-tight leading-none">cfao</span>
+      </div>
+      <span className="text-[9px] font-bold text-gray-400 tracking-[0.18em] uppercase">Mobility</span>
+    </div>
+  );
+}
+
+function NedbankLogo() {
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <div className="w-11 h-11 rounded-lg bg-[#007A4D] flex items-center justify-center shadow-md">
+        <span className="text-white font-black text-2xl leading-none" style={{ fontFamily: "serif" }}>N</span>
+      </div>
+      <span className="text-[9px] font-black text-[#007A4D] tracking-[0.2em] uppercase">Nedbank</span>
+    </div>
+  );
+}
+
+function SableLagerLogo() {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative w-12 h-12 rounded-full border-2 border-amber-800 bg-gradient-to-b from-amber-500 to-amber-700 flex flex-col items-center justify-center shadow-md">
+        <span className="text-white font-black text-[10px] leading-none tracking-wide">SABLE</span>
+        <span className="text-amber-200 text-[7px] font-bold leading-none tracking-widest mt-0.5">LAGER</span>
+      </div>
+    </div>
+  );
+}
+
+function IntaChemLogo() {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="flex items-end gap-0.5">
+        <div className="flex flex-col text-right leading-none">
+          {["I", "N", "T", "R", "A"].map((l, i) => (
+            <span key={i} className="text-[8px] font-black text-gray-700 leading-tight">{l}</span>
+          ))}
+        </div>
+        <span className="font-black text-base text-[#006B3F] leading-none tracking-tighter mb-0.5">CHEM</span>
+      </div>
+      <span className="text-[8px] text-gray-400 tracking-widest uppercase font-medium">Holdings</span>
+    </div>
+  );
+}
+
+function AllianceHealthLogo() {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="flex items-center gap-1">
+        {/* Cross symbol */}
+        <div className="relative w-5 h-5 flex-shrink-0">
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 rounded-sm bg-red-500" />
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1.5 rounded-sm bg-red-500" />
+        </div>
+        <span className="font-black text-sm text-[#1a3a6b] leading-none tracking-tight">Alliance</span>
+      </div>
+      <span className="text-[9px] font-bold text-red-500 tracking-[0.15em] uppercase">Health</span>
+    </div>
+  );
+}
+
+function BePartnerLogo() {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="w-10 h-10 rounded-xl bg-[#006B3F]/10 border-2 border-dashed border-[#006B3F]/30 flex items-center justify-center">
+        <span className="text-[#006B3F] text-xl font-black leading-none">+</span>
+      </div>
+      <span className="text-[10px] font-bold text-[#006B3F] text-center leading-tight">Your Brand<br />Here</span>
+    </div>
+  );
+}
+
+// ─── Partner data ─────────────────────────────────────────────────────────────
 const PARTNERS = [
-  { name: "CFAO Mobility", category: "Mobility Partner", placeholder: true },
-  { name: "IntaChem", category: "Official Sponsor", placeholder: true },
-  { name: "Nedbank", category: "Banking Partner", placeholder: true },
-  { name: "Sable Lager", category: "Beverage Partner", placeholder: true },
-  { name: "Alliance Health", category: "Health Partner", placeholder: true },
-  { name: "Your Brand Here", category: "Become a Partner", placeholder: true },
+  {
+    id: "cfao",
+    name: "CFAO Mobility",
+    category: "Mobility Partner",
+    LogoComponent: CfaoLogo,
+    href: "#",
+    cta: false,
+    hoverBorder: "hover:border-red-200",
+    hoverShadow: "hover:shadow-red-100/80",
+  },
+  {
+    id: "intachem",
+    name: "IntaChem",
+    category: "Official Sponsor",
+    LogoComponent: IntaChemLogo,
+    href: "#",
+    cta: false,
+    hoverBorder: "hover:border-green-200",
+    hoverShadow: "hover:shadow-green-100/80",
+  },
+  {
+    id: "nedbank",
+    name: "Nedbank",
+    category: "Banking Partner",
+    LogoComponent: NedbankLogo,
+    href: "#",
+    cta: false,
+    hoverBorder: "hover:border-emerald-200",
+    hoverShadow: "hover:shadow-emerald-100/80",
+  },
+  {
+    id: "sable-lager",
+    name: "Sable Lager",
+    category: "Beverage Partner",
+    LogoComponent: SableLagerLogo,
+    href: "#",
+    cta: false,
+    hoverBorder: "hover:border-amber-200",
+    hoverShadow: "hover:shadow-amber-100/80",
+  },
+  {
+    id: "alliance",
+    name: "Alliance Health",
+    category: "Health Partner",
+    LogoComponent: AllianceHealthLogo,
+    href: "#",
+    cta: false,
+    hoverBorder: "hover:border-blue-200",
+    hoverShadow: "hover:shadow-blue-100/80",
+  },
+  {
+    id: "cta",
+    name: "Your Brand Here",
+    category: "Become a Partner",
+    LogoComponent: BePartnerLogo,
+    href: "/contact",
+    cta: true,
+    hoverBorder: "hover:border-[#006B3F]/40",
+    hoverShadow: "hover:shadow-green-100/80",
+  },
 ];
 
+// ─── Section ──────────────────────────────────────────────────────────────────
 export default function PartnersSection() {
   return (
     <section className="py-20 bg-white relative overflow-hidden">
@@ -23,45 +158,45 @@ export default function PartnersSection() {
           viewport={{ once: true }}
           className="text-center mb-14"
         >
-          <p className="text-[#006B3F] text-xs font-bold tracking-[0.3em] uppercase mb-3">Supporting Zimbabwe Rugby</p>
-          <h2 className="text-4xl sm:text-5xl font-black text-[#0A1628]">Our Partners &amp; Sponsors</h2>
+          <p className="text-[#006B3F] text-xs font-bold tracking-[0.3em] uppercase mb-3">
+            Supporting Zimbabwe Rugby
+          </p>
+          <h2 className="text-4xl sm:text-5xl font-black text-[#0A1628]">
+            Our Partners &amp; Sponsors
+          </h2>
           <p className="text-gray-400 mt-4 max-w-xl mx-auto text-sm">
             We are proud to partner with organisations that share our vision of growing rugby in Zimbabwe and across Africa.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
-          {PARTNERS.map((partner, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.07 }}
-              className={`group relative flex flex-col items-center justify-center gap-3 rounded-2xl border-2 p-6 aspect-square transition-all hover:-translate-y-1 hover:shadow-xl ${
-                partner.name === "Your Brand Here"
-                  ? "border-dashed border-[#006B3F]/30 hover:border-[#006B3F]/60 bg-[#006B3F]/3 cursor-pointer"
-                  : "border-gray-100 hover:border-[#006B3F]/30 bg-gray-50/50 hover:bg-white"
-              }`}
-            >
-              {/* Logo placeholder */}
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center font-black text-lg ${
-                partner.name === "Your Brand Here"
-                  ? "bg-[#006B3F]/10 text-[#006B3F]"
-                  : "bg-[#0A1628]/8 text-[#0A1628]/40"
-              }`}>
-                {partner.name === "Your Brand Here" ? "+" : partner.name.slice(0, 2).toUpperCase()}
-              </div>
-              <div className="text-center">
-                <p className={`font-bold text-xs leading-tight ${
-                  partner.name === "Your Brand Here" ? "text-[#006B3F]" : "text-[#0A1628]"
-                }`}>
-                  {partner.name}
-                </p>
-                <p className="text-gray-400 text-[10px] mt-0.5">{partner.category}</p>
-              </div>
-            </motion.div>
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {PARTNERS.map((p, i) => {
+            const Logo = p.LogoComponent;
+            const inner = (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, scale: 0.92 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
+                className={`group flex flex-col items-center justify-center gap-3 rounded-2xl border-2 p-6 aspect-square transition-all hover:-translate-y-1 hover:shadow-xl ${
+                  p.cta
+                    ? `border-dashed border-[#006B3F]/25 ${p.hoverBorder} bg-[#006B3F]/3 cursor-pointer`
+                    : `border-gray-100 ${p.hoverBorder} bg-gray-50/50 hover:bg-white ${p.hoverShadow}`
+                }`}
+              >
+                <Logo />
+              </motion.div>
+            );
+
+            return p.cta ? (
+              <Link key={p.id} href={p.href}>
+                {inner}
+              </Link>
+            ) : (
+              <div key={p.id}>{inner}</div>
+            );
+          })}
         </div>
 
         <motion.div
