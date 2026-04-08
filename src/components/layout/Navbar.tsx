@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ZRULogo } from "@/components/shared/ZRULogo";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "The Sables", href: "/players" },
+  { label: "Our Team", href: "/teams" },
   {
     label: "Matches",
     href: "#",
@@ -62,9 +63,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-[#006B3F] rounded-full flex items-center justify-center border-2 border-[#D4AF37] group-hover:scale-105 transition-transform">
-              <span className="text-white font-black text-xs">ZRU</span>
-            </div>
+            <ZRULogo size={40} className="group-hover:scale-105 transition-transform" />
             <div className="hidden sm:block">
               <div className={`font-black text-sm leading-none tracking-wide transition-colors ${logoTextColor}`}>ZIMBABWE</div>
               <div className={`font-bold text-[10px] tracking-[0.2em] uppercase transition-colors ${logoSubColor}`}>Rugby Union</div>

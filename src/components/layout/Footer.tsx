@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Twitter, Facebook, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import { Twitter, Facebook, Instagram, Youtube, Mail, Phone, MapPin, Link2 } from "lucide-react";
+import { ZRULogo } from "@/components/shared/ZRULogo";
 
 export default function Footer() {
   return (
@@ -10,9 +11,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 bg-[#006B3F] rounded-full flex items-center justify-center border-2 border-[#D4AF37]">
-                <span className="text-white font-black text-sm">ZRU</span>
-              </div>
+              <ZRULogo size={48} />
               <div>
                 <div className="text-white font-black text-base leading-none">ZIMBABWE</div>
                 <div className="text-[#D4AF37] text-[10px] tracking-[0.2em] font-bold uppercase">Rugby Union</div>
@@ -21,12 +20,21 @@ export default function Footer() {
             <p className="text-white/50 text-sm leading-relaxed mb-5">
               The official governing body of rugby union in Zimbabwe. Developing the game from grassroots to international level.
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               {[Twitter, Facebook, Instagram, Youtube].map((Icon, i) => (
                 <a key={i} href="#" className="w-9 h-9 bg-white/5 hover:bg-[#006B3F] border border-white/10 hover:border-[#006B3F] rounded-lg flex items-center justify-center text-white/50 hover:text-white transition-all">
                   <Icon size={16} />
                 </a>
               ))}
+              <a
+                href="https://linktr.ee/ZRUSables"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Official Links (Linktree)"
+                className="w-9 h-9 bg-white/5 hover:bg-[#39E09B] border border-white/10 hover:border-[#39E09B] rounded-lg flex items-center justify-center text-white/50 hover:text-white transition-all"
+              >
+                <Link2 size={16} />
+              </a>
             </div>
           </div>
 
@@ -34,9 +42,16 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Quick Links</h3>
             <ul className="space-y-2">
-              {["Home", "Player Profiles", "Fixtures", "Results", "News", "Articles"].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-white/50 hover:text-[#D4AF37] text-sm transition-colors">{item}</Link>
+              {[
+                { label: "Home", href: "/" },
+                { label: "Our Team", href: "/teams" },
+                { label: "Fixtures", href: "/matches#fixtures" },
+                { label: "Results", href: "/matches#results" },
+                { label: "News", href: "/news" },
+                { label: "Articles", href: "/articles" },
+              ].map((item) => (
+                <li key={item.label}>
+                  <Link href={item.href} className="text-white/50 hover:text-[#D4AF37] text-sm transition-colors">{item.label}</Link>
                 </li>
               ))}
             </ul>

@@ -11,10 +11,15 @@ export const metadata: Metadata = {
   title: "Zimbabwe Rugby Union | Official Website",
   description: "Official website of the Zimbabwe Rugby Union — Home of the Sables",
   keywords: ["Zimbabwe Rugby", "ZRU", "Sables", "Rugby Union", "Zimbabwe"],
+  icons: {
+    icon: "/zimbabwe-rugby-logo.png",
+    apple: "/zimbabwe-rugby-logo.png",
+  },
   openGraph: {
     title: "Zimbabwe Rugby Union",
     description: "Official website of the Zimbabwe Rugby Union — Home of the Sables",
     type: "website",
+    images: ["/zimbabwe-rugby-logo.png"],
   },
 };
 
