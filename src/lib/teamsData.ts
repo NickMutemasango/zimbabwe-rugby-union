@@ -1,6 +1,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  Central data source for all ZRU national squads
-//  Update heroImage with actual team photography URLs when available.
+//  Central data source for all ZRU national squads.
+//  cardImage  → optimised Unsplash URL used on the /teams card grid.
+//  heroImage  → full-width URL used on the detail page header.
+//  Replace both with actual match-day photography when available.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type Medal = "gold" | "silver" | "bronze" | "milestone" | "upcoming";
@@ -16,32 +18,39 @@ export interface TeamData {
   slug: string;
   name: string;
   nickname: string;
+  tagline: string;           // Short sentence used on the card overlay
   badgeText: string;
   description: string;
   accentColor: string;
-  heroBgColor: string;       // CSS hex – used as gradient base
-  heroImage: string | null;  // Full URL – null = gradient only
+  heroBgColor: string;       // CSS hex – gradient base on detail hero
+  cardImage: string;         // Optimised image for the /teams card (w=800)
+  heroImage: string | null;  // Full-width image for detail page (w=1920)
   coach: string;
   captain: string;
   recentForm: ("W" | "L" | "D")[];
   keyFacts: { label: string; value: string }[];
-  history: string[];         // Paragraphs rendered as rich text
+  history: string[];
   achievements: TeamAchievement[];
-  matchTeamNames: string[];  // Names that appear in the fixtures API
+  matchTeamNames: string[];
   playerCount: string;
   founded: string;
 }
 
 export const TEAMS_DATA: Record<string, TeamData> = {
+
+  // ── 1. The Sables — Men's XV ────────────────────────────────────────────────
   "mens-xv": {
     slug: "mens-xv",
-    name: "Men's XV",
-    nickname: "The Sables",
+    name: "The Sables",
+    nickname: "Men's XV",
+    tagline: "The pride of the nation. Zimbabwe's senior men's XV team.",
     badgeText: "SENIOR MEN",
     accentColor: "#006B3F",
     heroBgColor: "#006B3F",
-    // Replace the URL below with an actual Sables match-day photograph
-    heroImage: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1920&q=80",
+    cardImage:
+      "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=800&q=75",
+    heroImage:
+      "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=1920&q=80",
     description:
       "Zimbabwe's senior men's national rugby union team. Since their international debut in 1987, the Sables have carried the green and gold with pride on the world stage.",
     coach: "TBA",
@@ -102,15 +111,19 @@ export const TEAMS_DATA: Record<string, TeamData> = {
     founded: "1980",
   },
 
+  // ── 2. Lady Sables — Women's XV ─────────────────────────────────────────────
   "womens-xv": {
     slug: "womens-xv",
-    name: "Women's XV",
-    nickname: "The Lady Sables",
+    name: "Lady Sables",
+    nickname: "Women's XV",
+    tagline: "Breaking barriers and making history. Our senior women's XV team.",
     badgeText: "SENIOR WOMEN",
     accentColor: "#9333ea",
     heroBgColor: "#6b21a8",
-    // Replace with actual Lady Sables team photograph
-    heroImage: "https://images.unsplash.com/photo-1599586120429-48281b6f0ece?auto=format&fit=crop&w=1920&q=80",
+    cardImage:
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=75",
+    heroImage:
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1920&q=80",
     description:
       "The Lady Sables represent Zimbabwe in women's international rugby, competing in the Africa Women's Championship and inspiring a new generation of female athletes across the nation.",
     coach: "TBA",
@@ -132,25 +145,25 @@ export const TEAMS_DATA: Record<string, TeamData> = {
       {
         year: "2001",
         title: "Programme Founded",
-        description: "The Zimbabwe women's national rugby programme was officially established by ZRU, marking a historic milestone for women's sport in the country.",
+        description: "The Zimbabwe women's national rugby programme was officially established by ZRU.",
         medal: "milestone",
       },
       {
         year: "2018",
         title: "Africa Women's Championship",
-        description: "The Lady Sables competed at the Rugby Africa Women's Championship, reaching the knockout stages and demonstrating top-tier continental ability.",
+        description: "The Lady Sables competed at the Rugby Africa Women's Championship, reaching the knockout stages.",
         medal: "silver",
       },
       {
         year: "2022",
         title: "Africa Women's Championship — Division 1",
-        description: "Zimbabwe secured a strong showing in Division 1 of the Africa Women's Championship, reinforcing their status among the continent's best.",
+        description: "Zimbabwe secured a strong showing in Division 1 of the Africa Women's Championship.",
         medal: "silver",
       },
       {
         year: "2024",
         title: "ZRU Women's Elite League Champions",
-        description: "The top-performing clubs supplied the backbone of the Lady Sables squad as domestic competition reached record levels.",
+        description: "Domestic competition reached record levels as the Lady Sables programme continued to grow.",
         medal: "gold",
       },
     ],
@@ -159,15 +172,141 @@ export const TEAMS_DATA: Record<string, TeamData> = {
     founded: "2001",
   },
 
+  // ── 3. Cheetahs — Men's Sevens ──────────────────────────────────────────────
+  "cheetahs": {
+    slug: "cheetahs",
+    name: "Cheetahs",
+    nickname: "Men's Sevens",
+    tagline: "The national men's sevens team competing on the World Series circuit.",
+    badgeText: "MEN'S SEVENS",
+    accentColor: "#D4AF37",
+    heroBgColor: "#92400e",
+    cardImage:
+      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=75",
+    heroImage:
+      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1920&q=80",
+    description:
+      "Fast, explosive, and electrifying. The Cheetahs bring African flair to the seven-a-side format, competing in continental and invitational tournaments worldwide.",
+    coach: "TBA",
+    captain: "TBA",
+    recentForm: ["W", "W", "W", "L", "W"],
+    keyFacts: [
+      { label: "Format", value: "7-a-side" },
+      { label: "Competition", value: "Africa Sevens Series" },
+      { label: "Tournament Duration", value: "2 Days" },
+      { label: "Founded", value: "1999" },
+    ],
+    history: [
+      "Zimbabwe's Cheetahs have been one of Africa's most entertaining rugby sevens teams since the format's rise in popularity in the late 1990s. Known for explosive pace, offloading skills, and an instinctive attacking game, the Cheetahs embody the spirit of African rugby at its most exhilarating.",
+      "The team competes in the Rugby Africa Sevens, the continental qualifier for the World Rugby Sevens Series, and regularly features in invitational tournaments across Africa. The sevens format has proven to be a powerful development tool — several of Zimbabwe's most dynamic XV players cut their international teeth in the sevens arena.",
+      "ZRU's investment in the sevens programme has grown considerably in recent years, with dedicated conditioning camps and sevens-specific coaching. The aim is to qualify Zimbabwe for the HSBC World Rugby Sevens Series circuit, where they would compete against the world's best sevens nations.",
+      "The connection between the Cheetahs and Sables programmes runs deep — shared fitness standards, complementary skill sets, and coordinated selection ensure the two squads reinforce each other.",
+    ],
+    achievements: [
+      {
+        year: "1999",
+        title: "Programme Founded",
+        description: "Zimbabwe officially established its national rugby sevens programme, competing in the continent's first structured sevens competitions.",
+        medal: "milestone",
+      },
+      {
+        year: "2009",
+        title: "Africa Sevens Series — Winners",
+        description: "The Cheetahs claimed a series title, confirming their status as one of the continent's premier sevens outfits.",
+        medal: "gold",
+      },
+      {
+        year: "2016",
+        title: "Plate Winners — Africa Sevens",
+        description: "The team claimed the Plate title at the Africa Sevens, showing competitive strength against top continental opposition.",
+        medal: "bronze",
+      },
+      {
+        year: "2023",
+        title: "Africa Sevens — Quarter-Final",
+        description: "Zimbabwe advanced to the knock-out stages of the Africa Sevens Series, competing at the highest continental level.",
+        medal: "silver",
+      },
+    ],
+    matchTeamNames: ["Zimbabwe Sevens", "Zimbabwe 7s", "Zimbabwe Cheetahs"],
+    playerCount: "7",
+    founded: "1999",
+  },
+
+  // ── 4. Lady Cheetahs — Women's Sevens ───────────────────────────────────────
+  "lady-cheetahs": {
+    slug: "lady-cheetahs",
+    name: "Lady Cheetahs",
+    nickname: "Women's Sevens",
+    tagline: "The national women's sevens team inspiring the next generation.",
+    badgeText: "WOMEN'S SEVENS",
+    accentColor: "#ec4899",
+    heroBgColor: "#9d174d",
+    cardImage:
+      "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=75",
+    heroImage:
+      "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=1920&q=80",
+    description:
+      "The Lady Cheetahs are Zimbabwe's women's national sevens team, competing in continental sevens competitions and providing a fast-track pathway into the Lady Sables XV programme.",
+    coach: "TBA",
+    captain: "TBA",
+    recentForm: ["W", "L", "W", "W", "L"],
+    keyFacts: [
+      { label: "Format", value: "7-a-side" },
+      { label: "Competition", value: "Africa Women's Sevens" },
+      { label: "Programme", value: "High Performance" },
+      { label: "Founded", value: "2010" },
+    ],
+    history: [
+      "The Zimbabwe Lady Cheetahs were established as part of ZRU's commitment to growing the women's game at every level. Competing in the Rugby Africa Women's Sevens, the squad blends youth and experience to represent Zimbabwe's ambitions in the fast-format game.",
+      "Sevens rugby provides an ideal platform for women's development — the faster game rewards skill, pace, and athleticism, qualities that the Lady Cheetahs possess in abundance. Many players who graduate from the Lady Cheetahs programme go on to represent the Lady Sables in the XVs format.",
+      "The Lady Cheetahs have participated in multiple Africa Women's Sevens tournaments, consistently improving their continental standing. With each tournament, the squad gains invaluable international experience that feeds back into the entire women's pathway at ZRU.",
+      "ZRU continues to invest in the women's sevens programme through targeted coaching, nutrition, and conditioning support — ensuring the Lady Cheetahs can compete at the highest level and inspire a new generation of female rugby players across Zimbabwe.",
+    ],
+    achievements: [
+      {
+        year: "2010",
+        title: "Programme Founded",
+        description: "The Zimbabwe women's sevens programme was officially launched, creating an exciting fast-format pathway within ZRU.",
+        medal: "milestone",
+      },
+      {
+        year: "2017",
+        title: "Africa Women's Sevens — Debut",
+        description: "The Lady Cheetahs competed at the Rugby Africa Women's Sevens for the first time, announcing themselves on the continental stage.",
+        medal: "milestone",
+      },
+      {
+        year: "2021",
+        title: "Africa Women's Sevens — Bowl Winners",
+        description: "The Lady Cheetahs claimed their first continental silverware, winning the Bowl at the Africa Women's Sevens tournament.",
+        medal: "bronze",
+      },
+      {
+        year: "2024",
+        title: "Africa Women's Sevens — Semi-Final",
+        description: "A landmark result as the Lady Cheetahs reached the semi-finals of the Africa Women's Sevens competition.",
+        medal: "silver",
+      },
+    ],
+    matchTeamNames: ["Zimbabwe Women Sevens", "Zimbabwe Women 7s", "Lady Cheetahs"],
+    playerCount: "7",
+    founded: "2010",
+  },
+
+  // ── 5. Junior Sables — U20 ──────────────────────────────────────────────────
   "junior-sables": {
     slug: "junior-sables",
     name: "Junior Sables",
     nickname: "U20 Men's XV",
+    tagline: "The future is bright. Our U20 team, consistently one of the top sides in Africa.",
     badgeText: "UNDER 20",
     accentColor: "#3b82f6",
     heroBgColor: "#1d4ed8",
-    // Replace with actual Junior Sables team photograph
-    heroImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1920&q=80",
+    cardImage:
+      "https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?auto=format&fit=crop&w=800&q=75",
+    heroImage:
+      "https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?auto=format&fit=crop&w=1920&q=80",
     description:
       "The Junior Sables are the future of Zimbabwean rugby. The U20 national team competes in the World Rugby U20 Trophy and Africa Under-20 Championship.",
     coach: "TBA",
@@ -182,8 +321,8 @@ export const TEAMS_DATA: Record<string, TeamData> = {
     history: [
       "The Zimbabwe Under-20 programme, known as the Junior Sables, has served as the primary development pathway for the senior Sables squad since the mid-1990s. Many of the Sables' most capped players took their first international steps in the Junior programme, underscoring its vital role in the national set-up.",
       "The Junior Sables compete in the World Rugby U20 Trophy — the second tier of global Under-20 rugby — as well as the Rugby Africa U20 Championship. Their performances in these tournaments attract scouts from professional clubs in Europe and South Africa, accelerating the careers of Zimbabwe's brightest young talents.",
-      "ZRU's High Performance Programme works directly with the Junior Sables coaching staff to apply sports science, video analysis, and conditioning methodologies that bring the squad in line with the best junior programmes in the world. The programme spans the full season, integrating with club and school rugby to identify players from across the country.",
-      "In recent years, the Junior Sables have produced notable graduates who have gone on to represent the senior team at the Africa Cup and Nations Cup levels. The programme remains the cornerstone of ZRU's long-term strategy to qualify for and compete at the Rugby World Cup 2027 in Australia.",
+      "ZRU's High Performance Programme works directly with the Junior Sables coaching staff to apply sports science, video analysis, and conditioning methodologies that bring the squad in line with the best junior programmes in the world.",
+      "In recent years, the Junior Sables have produced notable graduates who have gone on to represent the senior team at the Africa Cup and Nations Cup levels. The programme remains the cornerstone of ZRU's long-term strategy to qualify for and compete at the Rugby World Cup 2027.",
     ],
     achievements: [
       {
@@ -201,7 +340,7 @@ export const TEAMS_DATA: Record<string, TeamData> = {
       {
         year: "2019",
         title: "World Rugby U20 Trophy — 4th Place",
-        description: "A landmark result at the World Rugby U20 Trophy, finishing fourth in the global competition and confirming Zimbabwe's development progress.",
+        description: "A landmark result at the World Rugby U20 Trophy, finishing fourth in the global competition.",
         medal: "bronze",
       },
       {
@@ -214,63 +353,6 @@ export const TEAMS_DATA: Record<string, TeamData> = {
     matchTeamNames: ["Zimbabwe U20", "Zimbabwe Juniors", "Zimbabwe"],
     playerCount: "20",
     founded: "1995",
-  },
-
-  "sevens": {
-    slug: "sevens",
-    name: "Sevens",
-    nickname: "Zimbabwe Sevens",
-    badgeText: "SEVENS",
-    accentColor: "#D4AF37",
-    heroBgColor: "#92400e",
-    // Replace with actual Zimbabwe Sevens action photograph
-    heroImage: "https://images.unsplash.com/photo-1540747534547-8fd6a9b50a15?auto=format&fit=crop&w=1920&q=80",
-    description:
-      "Fast, explosive, and electrifying. Zimbabwe Sevens bring African flair to the seven-a-side format, competing in continental and invitational tournaments.",
-    coach: "TBA",
-    captain: "TBA",
-    recentForm: ["W", "W", "W", "L", "W"],
-    keyFacts: [
-      { label: "Format", value: "7-a-side" },
-      { label: "Competition", value: "Africa Sevens Series" },
-      { label: "Tournament Duration", value: "2 Days" },
-      { label: "Founded", value: "1999" },
-    ],
-    history: [
-      "Zimbabwe Sevens have been one of Africa's most entertaining rugby sevens teams since the format's rise in popularity in the late 1990s. Known for explosive pace, offloading skills, and an instinctive attacking game, the Zimbabwe Sevens squad embodies the spirit of African rugby at its most exhilarating.",
-      "The team competes in the Rugby Africa Sevens, the continental qualifier for the World Rugby Sevens Series, and regularly features in invitational tournaments across Africa. The sevens format has also proven to be a powerful development tool — several of Zimbabwe's most dynamic senior XV players cut their international teeth in the sevens arena.",
-      "ZRU's investment in the sevens programme has grown considerably in recent years, with dedicated conditioning camps and sevens-specific coaching forming part of the calendar. The aim is to qualify Zimbabwe for the HSBC World Rugby Sevens Series circuit, where they would compete against the world's best sevens nations.",
-      "The connection between the sevens and XVs programmes runs deep — shared fitness standards, complementary skill sets, and coordinated selection ensure that the two squads reinforce each other. Many of the Sables' most dangerous backs have sharpened their finishing and line-breaking instincts through sevens rugby.",
-    ],
-    achievements: [
-      {
-        year: "1999",
-        title: "Programme Founded",
-        description: "Zimbabwe officially established its national rugby sevens programme, competing in the continent's first structured sevens competitions.",
-        medal: "milestone",
-      },
-      {
-        year: "2009",
-        title: "Africa Sevens Series — Winners",
-        description: "Zimbabwe Sevens claimed a series title, confirming their status as one of the continent's premier sevens outfits.",
-        medal: "gold",
-      },
-      {
-        year: "2016",
-        title: "Plate Winners — Africa Sevens",
-        description: "The team claimed the Plate title at the Africa Sevens, showing competitive strength against top continental opposition.",
-        medal: "bronze",
-      },
-      {
-        year: "2023",
-        title: "Africa Sevens — Quarter-Final",
-        description: "Zimbabwe advanced to the knock-out stages of the Africa Sevens Series, competing at the highest continental level.",
-        medal: "silver",
-      },
-    ],
-    matchTeamNames: ["Zimbabwe Sevens", "Zimbabwe 7s", "Zimbabwe"],
-    playerCount: "7",
-    founded: "1999",
   },
 };
 
