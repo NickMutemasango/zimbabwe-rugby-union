@@ -27,7 +27,7 @@ export function ZRULogo({ size = 40, className = "" }: ZRULogoProps) {
       style={{ width: size, height: size, minWidth: size }}
     >
       <Image
-        src="/zimbabwe-rugby-logo.png"
+        src="/Rugby logo.png"
         alt="Zimbabwe Rugby Union"
         fill
         className="object-contain p-0.5"

@@ -8,14 +8,14 @@ const CONTACT_INFO = [
   {
     icon: MapPin,
     label: "Address",
-    value: "93 Leopold Takawira Avenue, Harare, Zimbabwe",
+    value: "36 Walmer Drive, Harare, Zimbabwe",
     sub: "Head Office",
   },
   {
     icon: Phone,
     label: "Phone",
-    value: "+263 4 251 280",
-    sub: "Mon – Fri, 8am – 5pm",
+    value: "+263 789 199 906",
+    sub: "Mon – Fri, 8:00 AM – 5:00 PM",
   },
   {
     icon: Mail,
@@ -26,8 +26,8 @@ const CONTACT_INFO = [
   {
     icon: Clock,
     label: "Office Hours",
-    value: "Monday – Friday",
-    sub: "08:00 – 17:00 CAT",
+    value: "Mon – Fri: 8:00 AM – 5:00 PM",
+    sub: "Central Africa Time",
   },
 ];
 
@@ -101,10 +101,10 @@ export default function ContactPage() {
               >
                 <div className="text-center">
                   <MapPin size={32} className="text-[#006B3F] mx-auto mb-2" />
-                  <p className="text-[#0A1628] font-bold text-sm">Harare Sports Club</p>
-                  <p className="text-gray-400 text-xs">Leopold Takawira Ave, Harare</p>
+                  <p className="text-[#0A1628] font-bold text-sm">Zimbabwe Rugby Union</p>
+                  <p className="text-gray-400 text-xs">36 Walmer Drive, Harare</p>
                   <a
-                    href="https://maps.google.com/?q=Harare+Sports+Club+Zimbabwe"
+                    href="https://maps.google.com/?q=36+Walmer+Drive+Harare+Zimbabwe"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 mt-3 px-4 py-2 bg-[#006B3F] text-white text-xs font-bold rounded-lg hover:bg-[#004D2C] transition-colors"
