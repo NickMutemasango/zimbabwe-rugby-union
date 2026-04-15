@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ExternalLink, Calendar, MapPin, Clock, Ticket } from "lucide-react";
+import { ExternalLink, Calendar, MapPin, Clock, Ticket, Info } from "lucide-react";
 import Link from "next/link";
 
 const FIRST_MATCH = new Date("2026-07-04T00:00:00");
 
+// ── ticketUrl / infoUrl: fill in the exact World Rugby links when confirmed ────
 const FIXTURES = [
   {
     date: "SAT 04 JULY 2026",
@@ -18,6 +19,8 @@ const FIXTURES = [
     city: "Denver, CO, USA",
     homeFlag: "🇹🇴",
     awayFlag: "🇿🇼",
+    ticketUrl: "#", // TODO: replace with Tonga vs Zimbabwe ticket link
+    infoUrl: "https://www.world.rugby/nations-cup/en/matches/2026",
   },
   {
     date: "SAT 11 JULY 2026",
@@ -30,6 +33,8 @@ const FIXTURES = [
     city: "Charlotte, NC, USA",
     homeFlag: "🇺🇸",
     awayFlag: "🇿🇼",
+    ticketUrl: "#", // TODO: replace with USA vs Zimbabwe ticket link
+    infoUrl: "https://www.world.rugby/nations-cup/en/matches/2026",
   },
   {
     date: "SAT 18 JULY 2026",
@@ -42,6 +47,8 @@ const FIXTURES = [
     city: "Winnipeg, Canada",
     homeFlag: "🇨🇦",
     awayFlag: "🇿🇼",
+    ticketUrl: "#", // TODO: replace with Canada vs Zimbabwe ticket link
+    infoUrl: "https://www.world.rugby/nations-cup/en/matches/2026",
   },
 ];
 
@@ -107,9 +114,8 @@ export default function NationsCupBanner() {
             )}
           </div>
 
-          {/* CTA buttons */}
+          {/* Section-level CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {/* PRIMARY — Buy Ticket (high-contrast amber) */}
             <Link
               href="https://go.usa.rugby/nations-cup-2026-presale"
               target="_blank"
@@ -119,8 +125,6 @@ export default function NationsCupBanner() {
               <Ticket size={16} />
               Buy Ticket
             </Link>
-
-            {/* SECONDARY — See More Info */}
             <Link
               href="https://www.world.rugby/nations-cup/en/matches/2026"
               target="_blank"
@@ -141,60 +145,90 @@ export default function NationsCupBanner() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="group bg-white border border-gray-200 hover:border-[#006B3F]/40 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-[#006B3F]/10 transition-all hover:-translate-y-1"
+              className="flex flex-col"
             >
-              {/* Card top accent stripe */}
-              <div className="h-1 bg-gradient-to-r from-[#006B3F] via-[#D4AF37] to-[#006B3F]" />
+              {/* ── Clickable card (links to match info) ── */}
+              <a
+                href={f.infoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group bg-white border border-gray-200 hover:border-[#006B3F]/40 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-[#006B3F]/10 transition-all hover:-translate-y-1 flex-1 block"
+              >
+                {/* Card top accent stripe */}
+                <div className="h-1 bg-gradient-to-r from-[#006B3F] via-[#D4AF37] to-[#006B3F]" />
 
-              <div className="p-5">
-                {/* Badges row */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] text-[#006B3F] font-black uppercase tracking-widest bg-[#006B3F]/8 px-2 py-1 rounded-md border border-[#006B3F]/15">
-                    Nations Cup
-                  </span>
-                  <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider bg-blue-50 px-2 py-1 rounded-md border border-blue-100">
-                    Upcoming
-                  </span>
-                </div>
-
-                {/* Teams row */}
-                <div className="flex items-center justify-between gap-3 mb-5">
-                  <div className="flex flex-col items-center gap-1.5 flex-1">
-                    <span className="text-4xl leading-none">{f.homeFlag}</span>
-                    <span className="text-[#0A1628] font-black text-sm text-center leading-tight">{f.home}</span>
-                    <span className="text-gray-400 text-[10px] font-bold tracking-wider">{f.homeCode}</span>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                    <div className="text-xl font-black text-gray-300">VS</div>
-                    <div className="flex items-center gap-1 text-gray-400 text-[10px]">
-                      <Clock size={9} />
-                      <span className="font-semibold">{f.kickoff}</span>
-                    </div>
-                    <span className="text-[9px] text-gray-300 uppercase tracking-wider">Local</span>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-1.5 flex-1">
-                    <span className="text-4xl leading-none">{f.awayFlag}</span>
-                    <span className="text-[#006B3F] font-black text-sm text-center leading-tight">{f.away}</span>
-                    <span className="text-[#006B3F]/50 text-[10px] font-bold tracking-wider">{f.awayCode}</span>
-                  </div>
-                </div>
-
-                {/* Date & Venue */}
-                <div className="border-t border-gray-100 pt-3 space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-gray-500 text-xs">
-                    <Calendar size={11} className="text-[#006B3F] flex-shrink-0" />
-                    <span className="font-semibold text-gray-700">{f.date}</span>
-                  </div>
-                  <div className="flex items-start gap-1.5 text-gray-400 text-xs">
-                    <MapPin size={11} className="text-[#006B3F] flex-shrink-0 mt-0.5" />
-                    <span>
-                      {f.venue},{" "}
-                      <span className="text-gray-400">{f.city}</span>
+                <div className="p-5">
+                  {/* Badges row */}
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] text-[#006B3F] font-black uppercase tracking-widest bg-[#006B3F]/8 px-2 py-1 rounded-md border border-[#006B3F]/15">
+                      Nations Cup
+                    </span>
+                    <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider bg-blue-50 px-2 py-1 rounded-md border border-blue-100">
+                      Upcoming
                     </span>
                   </div>
+
+                  {/* Teams row */}
+                  <div className="flex items-center justify-between gap-3 mb-5">
+                    <div className="flex flex-col items-center gap-1.5 flex-1">
+                      <span className="text-4xl leading-none">{f.homeFlag}</span>
+                      <span className="text-[#0A1628] font-black text-sm text-center leading-tight">{f.home}</span>
+                      <span className="text-gray-400 text-[10px] font-bold tracking-wider">{f.homeCode}</span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                      <div className="text-xl font-black text-gray-300">VS</div>
+                      <div className="flex items-center gap-1 text-gray-400 text-[10px]">
+                        <Clock size={9} />
+                        <span className="font-semibold">{f.kickoff}</span>
+                      </div>
+                      <span className="text-[9px] text-gray-300 uppercase tracking-wider">Local</span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1.5 flex-1">
+                      <span className="text-4xl leading-none">{f.awayFlag}</span>
+                      <span className="text-[#006B3F] font-black text-sm text-center leading-tight">{f.away}</span>
+                      <span className="text-[#006B3F]/50 text-[10px] font-bold tracking-wider">{f.awayCode}</span>
+                    </div>
+                  </div>
+
+                  {/* Date & Venue */}
+                  <div className="border-t border-gray-100 pt-3 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-gray-500 text-xs">
+                      <Calendar size={11} className="text-[#006B3F] flex-shrink-0" />
+                      <span className="font-semibold text-gray-700">{f.date}</span>
+                    </div>
+                    <div className="flex items-start gap-1.5 text-gray-400 text-xs">
+                      <MapPin size={11} className="text-[#006B3F] flex-shrink-0 mt-0.5" />
+                      <span>
+                        {f.venue},{" "}
+                        <span className="text-gray-400">{f.city}</span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
+              </a>
+
+              {/* ── Per-card action buttons ── */}
+              <div className="flex gap-2 mt-3">
+                <a
+                  href={f.ticketUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 bg-amber-500 hover:bg-amber-400 text-[#0A1628] font-black rounded-xl text-xs tracking-wide transition-all hover:shadow-lg hover:shadow-amber-400/40 hover:-translate-y-0.5"
+                >
+                  <Ticket size={13} />
+                  Buy Ticket
+                </a>
+                <a
+                  href={f.infoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 border-2 border-[#006B3F] text-[#006B3F] hover:bg-[#006B3F] hover:text-white font-bold rounded-xl text-xs transition-all"
+                >
+                  <Info size={13} />
+                  See More Info
+                </a>
               </div>
             </motion.div>
           ))}
