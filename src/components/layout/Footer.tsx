@@ -63,11 +63,11 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-white/50 text-sm">
                 <MapPin size={16} className="mt-0.5 text-[#006B3F] flex-shrink-0" />
-                <span>93 Leopold Takawira Ave, Harare, Zimbabwe</span>
+                <span>36 Walmer Drive, Harare, Zimbabwe</span>
               </li>
               <li className="flex items-center gap-3 text-white/50 text-sm">
                 <Phone size={16} className="text-[#006B3F] flex-shrink-0" />
-                <span>+263 4 251 280</span>
+                <span>+263 789 199 906</span>
               </li>
               <li className="flex items-center gap-3 text-white/50 text-sm">
                 <Mail size={16} className="text-[#006B3F] flex-shrink-0" />
