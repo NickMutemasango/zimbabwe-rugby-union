@@ -81,7 +81,7 @@ function BePartnerLogo() {
   );
 }
 
-// ─── Partner data ─────────────────────────────────────────────────────────────
+// ─── Partner data — 4 featured sponsors (full list at /sponsors) ──────────────
 const PARTNERS = [
   {
     id: "cfao",
@@ -89,7 +89,6 @@ const PARTNERS = [
     category: "Mobility Partner",
     LogoComponent: CfaoLogo,
     href: "#",
-    cta: false,
     hoverBorder: "hover:border-red-200",
     hoverShadow: "hover:shadow-red-100/80",
   },
@@ -99,7 +98,6 @@ const PARTNERS = [
     category: "Official Sponsor",
     LogoComponent: IntaChemLogo,
     href: "#",
-    cta: false,
     hoverBorder: "hover:border-green-200",
     hoverShadow: "hover:shadow-green-100/80",
   },
@@ -109,7 +107,6 @@ const PARTNERS = [
     category: "Banking Partner",
     LogoComponent: NedbankLogo,
     href: "#",
-    cta: false,
     hoverBorder: "hover:border-emerald-200",
     hoverShadow: "hover:shadow-emerald-100/80",
   },
@@ -119,29 +116,8 @@ const PARTNERS = [
     category: "Beverage Partner",
     LogoComponent: SableLagerLogo,
     href: "#",
-    cta: false,
     hoverBorder: "hover:border-amber-200",
     hoverShadow: "hover:shadow-amber-100/80",
-  },
-  {
-    id: "alliance",
-    name: "Alliance Health",
-    category: "Health Partner",
-    LogoComponent: AllianceHealthLogo,
-    href: "#",
-    cta: false,
-    hoverBorder: "hover:border-blue-200",
-    hoverShadow: "hover:shadow-blue-100/80",
-  },
-  {
-    id: "cta",
-    name: "Your Brand Here",
-    category: "Become a Partner",
-    LogoComponent: BePartnerLogo,
-    href: "/contact",
-    cta: true,
-    hoverBorder: "hover:border-[#006B3F]/40",
-    hoverShadow: "hover:shadow-green-100/80",
   },
 ];
 
@@ -169,32 +145,22 @@ export default function PartnersSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {PARTNERS.map((p, i) => {
             const Logo = p.LogoComponent;
-            const inner = (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, scale: 0.92 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-                className={`group flex flex-col items-center justify-center gap-3 rounded-2xl border-2 p-6 aspect-square transition-all hover:-translate-y-1 hover:shadow-xl ${
-                  p.cta
-                    ? `border-dashed border-[#006B3F]/25 ${p.hoverBorder} bg-[#006B3F]/3 cursor-pointer`
-                    : `border-gray-100 ${p.hoverBorder} bg-gray-50/50 hover:bg-white ${p.hoverShadow}`
-                }`}
-              >
-                <Logo />
-              </motion.div>
-            );
-
-            return p.cta ? (
-              <Link key={p.id} href={p.href}>
-                {inner}
-              </Link>
-            ) : (
-              <div key={p.id}>{inner}</div>
+            return (
+              <div key={p.id}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07 }}
+                  className={`group flex flex-col items-center justify-center gap-3 rounded-2xl border-2 p-8 aspect-square transition-all hover:-translate-y-1 hover:shadow-xl border-gray-100 ${p.hoverBorder} bg-gray-50/50 hover:bg-white ${p.hoverShadow}`}
+                >
+                  <Logo />
+                  <p className="text-[10px] text-gray-400 font-medium tracking-wide uppercase">{p.category}</p>
+                </motion.div>
+              </div>
             );
           })}
         </div>
@@ -203,8 +169,14 @@ export default function PartnersSection() {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mt-10"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10"
         >
+          <Link
+            href="/sponsors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#006B3F] hover:bg-[#004D2C] text-white font-bold rounded-xl transition-all text-sm hover:shadow-lg hover:shadow-[#006B3F]/30"
+          >
+            View All Partners
+          </Link>
           <Link
             href="/contact"
             className="inline-flex items-center gap-2 px-6 py-3 border-2 border-[#006B3F] text-[#006B3F] hover:bg-[#006B3F] hover:text-white font-bold rounded-xl transition-all text-sm"

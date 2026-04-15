@@ -2,50 +2,37 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// ─── Data — 4 Gold Medal highlights (full list at /trophy-room) ───────────────
 const ACHIEVEMENTS = [
   {
-    year: "1987",
-    title: "Inaugural Rugby World Cup",
-    description: "Zimbabwe proudly represented Africa at the very first Rugby World Cup in New Zealand & Australia.",
+    year: "2024",
+    title: "Rugby Africa Cup XVs — Sables",
+    description: "Zimbabwe's Sables claimed Gold at the Rugby Africa Cup, cementing their place among Africa's elite XV-a-side nations.",
     medal: "gold" as const,
-    label: "World Cup",
-  },
-  {
-    year: "1991",
-    title: "Rugby World Cup — UK & France",
-    description: "The Sables qualified for a second consecutive Rugby World Cup, competing in the British Isles & France.",
-    medal: "gold" as const,
-    label: "World Cup",
-  },
-  {
-    year: "1995",
-    title: "Rugby World Cup — South Africa",
-    description: "Zimbabwe's historic third consecutive World Cup appearance on home African soil.",
-    medal: "gold" as const,
-    label: "World Cup",
-  },
-  {
-    year: "2001",
-    title: "Africa Cup Champions",
-    description: "Zimbabwe won the Africa Cup — their greatest continental honour — standing as Africa's premier rugby nation.",
-    medal: "gold" as const,
-    label: "Champions",
+    label: "Gold",
   },
   {
     year: "2023",
-    title: "Africa Cup Division 1A",
-    description: "The Sables competed at the top tier of African rugby, showing renewed strength on the continent.",
-    medal: "silver" as const,
-    label: "Division 1A",
+    title: "U20 Barthes Trophy — Junior Sables",
+    description: "The Junior Sables triumphed at the U20 Barthes Trophy, showcasing the depth and quality in Zimbabwe's development pipeline.",
+    medal: "gold" as const,
+    label: "Gold",
   },
   {
-    year: "2026",
-    title: "World Rugby Nations Cup",
-    description: "Zimbabwe qualifies for the World Rugby Nations Cup, facing Tonga, USA, and Canada in the Americas.",
-    medal: "upcoming" as const,
-    label: "Upcoming",
+    year: "2023",
+    title: "7s Zambezi Challenge Cup — Cheetahs",
+    description: "The Cheetahs 7s men dominated the Zambezi Challenge Cup, taking Gold and asserting regional supremacy.",
+    medal: "gold" as const,
+    label: "Gold",
+  },
+  {
+    year: "2022",
+    title: "Rugby Africa 7s Tournament — Lady Sables",
+    description: "The Lady Sables made history, winning Gold at the Rugby Africa 7s Tournament — a landmark moment for women's rugby in Zimbabwe.",
+    medal: "gold" as const,
+    label: "Gold",
   },
 ];
 
@@ -213,8 +200,15 @@ export default function AchievementsSection() {
             </p>
             <h2 className="text-4xl sm:text-5xl font-black text-[#0A1628]">Trophy Room</h2>
             <p className="text-gray-500 mt-3 max-w-md text-sm leading-relaxed">
-              From Rugby World Cup debuts to continental titles — a proud history spanning four decades.
+              Highlighting our Gold Medal achievements — a proud history of continental glory.
             </p>
+            <Link
+              href="/trophy-room"
+              className="inline-flex items-center gap-1.5 mt-4 text-sm font-bold text-[#006B3F] hover:text-[#004D2C] transition-colors group"
+            >
+              View all achievements
+              <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
 
           {/* Nav arrows */}
@@ -306,17 +300,18 @@ export default function AchievementsSection() {
               );
             })}
 
-            {/* "More to come" end card */}
-            <div
-              className="flex-shrink-0 bg-white border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-center p-8 hover:border-[#006B3F]/30 transition-colors"
+            {/* "View Trophy Room" end card */}
+            <Link
+              href="/trophy-room"
+              className="flex-shrink-0 bg-[#0A1628] rounded-2xl flex flex-col items-center justify-center gap-3 text-center p-8 hover:bg-[#006B3F] transition-colors duration-300 group"
               style={{ width: "200px", scrollSnapAlign: "start" }}
             >
-              <div className="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center text-2xl">
-                ⭐
+              <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
+                <ChevronRight size={24} className="text-white group-hover:translate-x-1 transition-transform" />
               </div>
-              <p className="text-gray-400 text-sm font-bold leading-tight">More milestones to come</p>
-              <p className="text-gray-300 text-xs">The Sables story continues…</p>
-            </div>
+              <p className="text-white text-sm font-bold leading-tight">View Trophy Room</p>
+              <p className="text-white/50 text-xs">All achievements →</p>
+            </Link>
           </div>
         </motion.div>
 
