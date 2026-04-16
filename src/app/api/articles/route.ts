@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { findAll, insertDoc, generateId, type Article } from '@/lib/db';
-import { saveUpload } from '@/lib/upload';
+import { saveUpload, mimeToFileType } from '@/lib/upload';
 
 export async function GET() {
   try {
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const pdfFile     = formData.get('pdf')           as File | null;
 
     if (!title) return NextResponse.json({ error: 'title is required' }, { status: 400 });
-    if (!pdfFile || pdfFile.size === 0) return NextResponse.json({ error: 'A PDF file is required' }, { status: 400 });
+    if (!pdfFile || pdfFile.size === 0) return NextResponse.json({ error: 'A document file is required' }, { status: 400 });
 
     const upload = await saveUpload(pdfFile, 'pdf');
 
@@ -30,6 +30,7 @@ export async function POST(request: Request) {
       pdfUrl: upload.url,
       thumbnailUrl: null,
       fileSize: upload.size,
+      fileType: mimeToFileType(pdfFile.type),
       createdAt: new Date().toISOString(),
     };
 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { findById, updateDoc, deleteDoc, type Article } from '@/lib/db';
-import { saveUpload } from '@/lib/upload';
+import { saveUpload, mimeToFileType } from '@/lib/upload';
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -31,14 +31,16 @@ export async function PUT(request: Request, ctx: Ctx) {
 
     let pdfUrl   = existing.pdfUrl;
     let fileSize = existing.fileSize;
+    let fileType = existing.fileType ?? 'pdf';
     const pdfFile = formData.get('pdf') as File | null;
     if (pdfFile && pdfFile.size > 0) {
       const upload = await saveUpload(pdfFile, 'pdf');
       pdfUrl   = upload.url;
       fileSize = upload.size;
+      fileType = mimeToFileType(pdfFile.type);
     }
 
-    const updated = await updateDoc<Article>('articles', id, { title, description, date, pdfUrl, fileSize });
+    const updated = await updateDoc<Article>('articles', id, { title, description, date, pdfUrl, fileSize, fileType });
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[API] PUT /api/articles/${id} → pdfUrl:`, updated?.pdfUrl);
     }

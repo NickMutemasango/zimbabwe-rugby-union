@@ -4,13 +4,24 @@ export type UploadType = 'image' | 'pdf';
 
 const ALLOWED: Record<UploadType, string[]> = {
   image: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-  pdf:   ['application/pdf'],
+  pdf:   [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ],
 };
 
 const MAX_SIZE: Record<UploadType, number> = {
   image: 50 * 1024 * 1024,   // 50 MB
   pdf:   50 * 1024 * 1024,   // 50 MB
 };
+
+/** Derive a short file type label from a MIME type */
+export function mimeToFileType(mime: string): 'pdf' | 'doc' | 'docx' {
+  if (mime === 'application/pdf') return 'pdf';
+  if (mime === 'application/msword') return 'doc';
+  return 'docx';
+}
 
 export interface UploadResult {
   url:      string;
