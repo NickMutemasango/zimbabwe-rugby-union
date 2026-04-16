@@ -209,27 +209,6 @@ export default function NationsCupBanner() {
                 </div>
               </a>
 
-              {/* ── Per-card action buttons ── */}
-              <div className="flex gap-2 mt-3">
-                <a
-                  href={f.ticketUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 bg-amber-500 hover:bg-amber-400 text-[#0A1628] font-black rounded-xl text-xs tracking-wide transition-all hover:shadow-lg hover:shadow-amber-400/40 hover:-translate-y-0.5"
-                >
-                  <Ticket size={13} />
-                  Buy Ticket
-                </a>
-                <a
-                  href={f.infoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 border-2 border-[#006B3F] text-[#006B3F] hover:bg-[#006B3F] hover:text-white font-bold rounded-xl text-xs transition-all"
-                >
-                  <Info size={13} />
-                  See More Info
-                </a>
-              </div>
             </motion.div>
           ))}
         </div>
