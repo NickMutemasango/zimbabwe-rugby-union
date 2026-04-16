@@ -307,6 +307,112 @@ function ManageSection({
   );
 }
 
+// ── Team Form (Match Results) ─────────────────────────────────────────────────
+function TeamFormForm({ onSuccess }: { onSuccess: () => void }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault(); setLoading(true); setError("");
+    try {
+      await apiPost("/api/team-form", new FormData(e.currentTarget));
+      formRef.current?.reset(); onSuccess();
+    } catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed"); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+      {error && <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">{error}</div>}
+      <Select label="Team *" name="teamSlug">
+        <option value="mens-xv">The Sables (Men's XV)</option>
+        <option value="junior-sables">Junior Sables (U20)</option>
+      </Select>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Select label="Result *" name="result">
+          <option value="W">W — Win</option>
+          <option value="L">L — Loss</option>
+          <option value="D">D — Draw</option>
+        </Select>
+        <Input label="Match Date *" name="date" type="date" required defaultValue={new Date().toISOString().split("T")[0]} />
+      </div>
+      <Input label="Opponent *" name="opponent" placeholder="e.g. Kenya, Namibia, Tonga" required />
+      <SubmitBtn loading={loading} label="Add Form Entry" />
+
+      <ManageSection
+        endpoint="/api/team-form"
+        label="form entry"
+        getItemName={(item) => `${item.result as string} vs ${item.opponent as string}`}
+        renderRow={(item) => (
+          <div className="flex items-center gap-3">
+            <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${
+              item.result === "W" ? "bg-emerald-100 text-emerald-700" :
+              item.result === "L" ? "bg-red-100 text-red-600" :
+              "bg-yellow-100 text-yellow-700"
+            }`}>{item.result as string}</span>
+            <div>
+              <p className="text-[#0A1628] text-sm font-semibold">vs {item.opponent as string}</p>
+              <p className="text-gray-400 text-xs">{item.teamSlug as string} · {item.date as string}</p>
+            </div>
+          </div>
+        )}
+      />
+    </form>
+  );
+}
+
+// ── Achievements & Trophies ───────────────────────────────────────────────────
+function AchievementForm({ onSuccess }: { onSuccess: () => void }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault(); setLoading(true); setError("");
+    try {
+      await apiPost("/api/achievements", new FormData(e.currentTarget));
+      formRef.current?.reset(); onSuccess();
+    } catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed"); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+      {error && <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">{error}</div>}
+      <Select label="Team *" name="teamSlug">
+        <option value="mens-xv">The Sables (Men's XV)</option>
+        <option value="womens-xv">Lady Sables (Women's XV)</option>
+        <option value="junior-sables">Junior Sables (U20)</option>
+        <option value="cheetahs">Cheetahs (Men's Sevens)</option>
+      </Select>
+      <Input label="Trophy / Achievement Name *" name="title" placeholder="e.g. Africa Cup Champions" required />
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Input label="Year *" name="year" placeholder="e.g. 2024" maxLength={4} required />
+        <Select label="Medal / Rank *" name="medal">
+          <option value="gold">🥇 Gold</option>
+          <option value="silver">🥈 Silver</option>
+          <option value="bronze">🥉 Bronze</option>
+          <option value="milestone">🏅 Milestone</option>
+        </Select>
+      </div>
+      <SubmitBtn loading={loading} label="Save Achievement" />
+
+      <ManageSection
+        endpoint="/api/achievements"
+        label="achievement"
+        getItemName={(item) => `${item.title as string} (${item.year as string})`}
+        renderRow={(item) => (
+          <div>
+            <p className="text-[#0A1628] text-sm font-semibold truncate">{item.title as string}</p>
+            <p className="text-gray-400 text-xs">{item.year as string} · {item.teamSlug as string} · {item.medal as string}</p>
+          </div>
+        )}
+      />
+    </form>
+  );
+}
+
 // ── Tab Forms ─────────────────────────────────────────────────────────────────
 function PlayerForm({ onSuccess }: { onSuccess: () => void }) {
   const [pic, setPic] = useState<File | null>(null);
@@ -593,13 +699,15 @@ function PinGate({ onUnlock }: { onUnlock: () => void }) {
 }
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
-type Tab = "player" | "news" | "fixture" | "result" | "article";
+type Tab = "player" | "news" | "fixture" | "result" | "article" | "form" | "trophy";
 const TABS: { value: Tab; label: string; emoji: string }[] = [
   { value: "player",  label: "Player",      emoji: "🏉" },
   { value: "news",    label: "News",         emoji: "📰" },
   { value: "article", label: "Article/PDF",  emoji: "📄" },
   { value: "fixture", label: "Fixture",      emoji: "📅" },
   { value: "result",  label: "Result",       emoji: "🏆" },
+  { value: "form",    label: "Team Form",    emoji: "📋" },
+  { value: "trophy",  label: "Trophy",       emoji: "🥇" },
 ];
 
 export default function AdminUpdatePage() {
@@ -677,11 +785,13 @@ export default function AdminUpdatePage() {
                 {TABS.find(t => t.value === tab)?.label} Details
               </h2>
             </div>
-            {tab === "player"  && <PlayerForm  onSuccess={handleSuccess} />}
-            {tab === "news"    && <NewsForm    onSuccess={handleSuccess} />}
-            {tab === "article" && <ArticleForm onSuccess={handleSuccess} />}
-            {tab === "fixture" && <FixtureForm onSuccess={handleSuccess} />}
-            {tab === "result"  && <ResultForm  onSuccess={handleSuccess} />}
+            {tab === "player"  && <PlayerForm      onSuccess={handleSuccess} />}
+            {tab === "news"    && <NewsForm        onSuccess={handleSuccess} />}
+            {tab === "article" && <ArticleForm     onSuccess={handleSuccess} />}
+            {tab === "fixture" && <FixtureForm     onSuccess={handleSuccess} />}
+            {tab === "result"  && <ResultForm      onSuccess={handleSuccess} />}
+            {tab === "form"    && <TeamFormForm    onSuccess={handleSuccess} />}
+            {tab === "trophy"  && <AchievementForm onSuccess={handleSuccess} />}
           </motion.div>
         </AnimatePresence>
       </div>
