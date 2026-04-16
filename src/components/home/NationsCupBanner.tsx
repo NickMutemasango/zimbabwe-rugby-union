@@ -69,6 +69,22 @@ export default function NationsCupBanner() {
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+      {/* Shimmer keyframe */}
+      <style>{`
+        @keyframes shimmer-sweep {
+          0%   { background-position: 200% center; }
+          100% { background-position: -200% center; }
+        }
+        .shimmer-text {
+          background: linear-gradient(90deg, #6b7280 0%, #006B3F 40%, #D4AF37 50%, #006B3F 60%, #6b7280 100%);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: shimmer-sweep 3.5s linear infinite;
+        }
+      `}</style>
+
       {/* Top transition from dark Hero */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#006B3F] to-transparent" />
 
@@ -100,40 +116,38 @@ export default function NationsCupBanner() {
             <span className="text-[#006B3F]">2026</span>
           </h2>
 
-          {/* Countdown pill */}
-          <div className="inline-flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-2xl px-6 py-3 mb-8">
-            <span className="text-gray-500 text-sm">The Nations Cup is approaching!</span>
+          {/* Countdown pill — animated entry + shimmer text + pulsing badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ type: "spring", damping: 18, stiffness: 180, delay: 0.15 }}
+            className="inline-flex items-center gap-3 bg-white border border-gray-200 shadow-sm rounded-2xl px-6 py-3 mb-8"
+          >
+            <span className="shimmer-text text-sm font-semibold">
+              The Nations Cup is approaching!
+            </span>
             {days > 0 ? (
-              <span className="bg-[#006B3F] text-white text-sm font-black px-3 py-1 rounded-lg tabular-nums">
+              <motion.span
+                animate={{
+                  scale: [1, 1.06, 1],
+                  boxShadow: [
+                    "0 0 0px rgba(0,107,63,0)",
+                    "0 0 10px rgba(0,107,63,0.45)",
+                    "0 0 0px rgba(0,107,63,0)",
+                  ],
+                }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                className="bg-[#006B3F] text-white text-sm font-black px-3 py-1 rounded-lg tabular-nums inline-block"
+              >
                 {days} days to go
-              </span>
+              </motion.span>
             ) : (
               <span className="bg-emerald-500 text-white text-sm font-black px-3 py-1 rounded-lg">
                 Underway!
               </span>
             )}
-          </div>
-
-          {/* Section-level CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="https://go.usa.rugby/nations-cup-2026-presale"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-amber-500 hover:bg-amber-400 text-[#0A1628] font-black rounded-xl transition-all hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-0.5 text-sm tracking-wide"
-            >
-              <Ticket size={16} />
-              Buy Ticket
-            </Link>
-            <Link
-              href="https://www.world.rugby/nations-cup/en/matches/2026"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white hover:bg-gray-50 text-[#006B3F] border-2 border-[#006B3F] font-bold rounded-xl transition-all hover:shadow-md text-sm"
-            >
-              See More Info <ExternalLink size={14} />
-            </Link>
-          </div>
+          </motion.div>
         </motion.div>
 
         {/* ── Fixture cards ── */}
@@ -208,14 +222,42 @@ export default function NationsCupBanner() {
                   </div>
                 </div>
               </a>
-
             </motion.div>
           ))}
         </div>
 
-        <p className="text-center text-gray-400 text-xs mt-6 uppercase tracking-widest">
-          All kick-off times are local
-        </p>
+        {/* ── Bottom: kick-off note + CTAs ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="mt-10 flex flex-col items-center gap-5"
+        >
+          <p className="text-gray-400 text-xs uppercase tracking-widest">
+            All kick-off times are local
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="https://go.usa.rugby/nations-cup-2026-presale"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-amber-500 hover:bg-amber-400 text-[#0A1628] font-black rounded-xl transition-all hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-0.5 text-sm tracking-wide"
+            >
+              <Ticket size={16} />
+              Buy Ticket
+            </Link>
+            <Link
+              href="https://www.world.rugby/nations-cup/en/matches/2026"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white hover:bg-gray-50 text-[#006B3F] border-2 border-[#006B3F] font-bold rounded-xl transition-all hover:shadow-md text-sm"
+            >
+              See More Info <ExternalLink size={14} />
+            </Link>
+          </div>
+        </motion.div>
       </div>
 
       {/* Bottom transition to white MatchCenter */}
