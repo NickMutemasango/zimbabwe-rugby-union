@@ -327,6 +327,8 @@ function TeamFormForm({ onSuccess }: { onSuccess: () => void }) {
       {error && <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">{error}</div>}
       <Select label="Team *" name="teamSlug">
         <option value="mens-xv">The Sables (Men's XV)</option>
+        <option value="womens-xv">Lady Sables (Women's XV)</option>
+        <option value="cheetahs">Cheetahs (Men's Sevens)</option>
         <option value="junior-sables">Junior Sables (U20)</option>
       </Select>
       <div className="grid sm:grid-cols-2 gap-4">

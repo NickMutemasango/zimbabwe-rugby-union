@@ -182,11 +182,15 @@ function ResultCard({ result, index }: { result: Result; index: number }) {
 type TabId = "achievements" | "matches" | "history";
 
 // ─── Main client component ────────────────────────────────────────────────────
+type FormEntry = { result: "W" | "L" | "D"; opponent: string; date: string };
+
 export default function TeamDetailClient({ team }: { team: TeamData }) {
   const [activeTab, setActiveTab] = useState<TabId>("achievements");
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
   const [results, setResults] = useState<Result[]>([]);
   const [loadingMatches, setLoadingMatches] = useState(true);
+  const [formEntries, setFormEntries] = useState<FormEntry[]>([]);
+  const [formLoading, setFormLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
@@ -211,6 +215,22 @@ export default function TeamDetailClient({ team }: { team: TeamData }) {
       setResults(filteredRes);
     }).finally(() => setLoadingMatches(false));
   }, [team.matchTeamNames]);
+
+  useEffect(() => {
+    fetch("/api/team-form")
+      .then(r => r.json())
+      .then((data: Array<{ teamSlug: string } & FormEntry>) => {
+        if (!Array.isArray(data)) return;
+        const filtered = data
+          .filter(e => e.teamSlug === team.slug)
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 5)
+          .map(({ result, opponent, date }) => ({ result, opponent, date }));
+        setFormEntries(filtered);
+      })
+      .catch(() => {})
+      .finally(() => setFormLoading(false));
+  }, [team.slug]);
 
   const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
     { id: "achievements", label: "Achievements", icon: Trophy },
@@ -320,14 +340,30 @@ export default function TeamDetailClient({ team }: { team: TeamData }) {
             {/* Recent Form */}
             <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
               <h3 className="text-[#0A1628] font-black text-sm uppercase tracking-widest mb-3">Recent Form</h3>
-              <div className="flex gap-2">
-                {team.recentForm.map((r, i) => (
-                  <div key={i} className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-black ${formColors[r]}`}>
-                    {r}
+              {formLoading ? (
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="w-9 h-9 rounded-lg bg-gray-100 animate-pulse" />
+                  ))}
+                </div>
+              ) : formEntries.length === 0 ? (
+                <p className="text-gray-300 text-xs italic">No recent match data</p>
+              ) : (
+                <>
+                  <div className="flex gap-2">
+                    {formEntries.map((e, i) => (
+                      <div
+                        key={i}
+                        title={`vs ${e.opponent}`}
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-black cursor-default ${formColors[e.result]}`}
+                      >
+                        {e.result}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <p className="text-gray-300 text-xs mt-2">Last 5 (newest right)</p>
+                  <p className="text-gray-300 text-xs mt-2">Last {formEntries.length} (newest first)</p>
+                </>
+              )}
             </div>
 
             {/* Players CTA */}
