@@ -233,68 +233,7 @@ export const TEAMS_DATA: Record<string, TeamData> = {
     founded: "1999",
   },
 
-  // ── 4. Lady Cheetahs — Women's Sevens ───────────────────────────────────────
-  "lady-cheetahs": {
-    slug: "lady-cheetahs",
-    name: "Lady Cheetahs",
-    nickname: "Women's Sevens",
-    tagline: "The national women's sevens team inspiring the next generation.",
-    badgeText: "WOMEN'S SEVENS",
-    accentColor: "#ec4899",
-    heroBgColor: "#9d174d",
-    cardImage:
-      "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=75",
-    heroImage:
-      "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=1920&q=80",
-    description:
-      "The Lady Cheetahs are Zimbabwe's women's national sevens team, competing in continental sevens competitions and providing a fast-track pathway into the Lady Sables XV programme.",
-    coach: "TBA",
-    captain: "TBA",
-    recentForm: ["W", "L", "W", "W", "L"],
-    keyFacts: [
-      { label: "Format", value: "7-a-side" },
-      { label: "Competition", value: "Africa Women's Sevens" },
-      { label: "Programme", value: "High Performance" },
-      { label: "Founded", value: "2010" },
-    ],
-    history: [
-      "The Zimbabwe Lady Cheetahs were established as part of ZRU's commitment to growing the women's game at every level. Competing in the Rugby Africa Women's Sevens, the squad blends youth and experience to represent Zimbabwe's ambitions in the fast-format game.",
-      "Sevens rugby provides an ideal platform for women's development — the faster game rewards skill, pace, and athleticism, qualities that the Lady Cheetahs possess in abundance. Many players who graduate from the Lady Cheetahs programme go on to represent the Lady Sables in the XVs format.",
-      "The Lady Cheetahs have participated in multiple Africa Women's Sevens tournaments, consistently improving their continental standing. With each tournament, the squad gains invaluable international experience that feeds back into the entire women's pathway at ZRU.",
-      "ZRU continues to invest in the women's sevens programme through targeted coaching, nutrition, and conditioning support — ensuring the Lady Cheetahs can compete at the highest level and inspire a new generation of female rugby players across Zimbabwe.",
-    ],
-    achievements: [
-      {
-        year: "2010",
-        title: "Programme Founded",
-        description: "The Zimbabwe women's sevens programme was officially launched, creating an exciting fast-format pathway within ZRU.",
-        medal: "milestone",
-      },
-      {
-        year: "2017",
-        title: "Africa Women's Sevens — Debut",
-        description: "The Lady Cheetahs competed at the Rugby Africa Women's Sevens for the first time, announcing themselves on the continental stage.",
-        medal: "milestone",
-      },
-      {
-        year: "2021",
-        title: "Africa Women's Sevens — Bowl Winners",
-        description: "The Lady Cheetahs claimed their first continental silverware, winning the Bowl at the Africa Women's Sevens tournament.",
-        medal: "bronze",
-      },
-      {
-        year: "2024",
-        title: "Africa Women's Sevens — Semi-Final",
-        description: "A landmark result as the Lady Cheetahs reached the semi-finals of the Africa Women's Sevens competition.",
-        medal: "silver",
-      },
-    ],
-    matchTeamNames: ["Zimbabwe Women Sevens", "Zimbabwe Women 7s", "Lady Cheetahs"],
-    playerCount: "7",
-    founded: "2010",
-  },
-
-  // ── 5. Junior Sables — U20 ──────────────────────────────────────────────────
+  // ── 4. Junior Sables — U20 ──────────────────────────────────────────────────
   "junior-sables": {
     slug: "junior-sables",
     name: "Junior Sables",

@@ -130,3 +130,21 @@ export interface Result {
   report: string;
   createdAt: string;
 }
+
+export interface TeamFormEntry {
+  id: string;
+  teamSlug: string;
+  result: "W" | "L" | "D";
+  opponent: string;
+  date: string;
+  createdAt: string;
+}
+
+export interface Achievement {
+  id: string;
+  teamSlug: string;
+  title: string;
+  year: string;
+  medal: "gold" | "silver" | "bronze" | "milestone";
+  createdAt: string;
+}
