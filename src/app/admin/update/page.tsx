@@ -535,20 +535,30 @@ function ArticleForm({ onSuccess }: { onSuccess: () => void }) {
       <Input label="Document Title *" name="title" placeholder="e.g. ZRU Annual Report 2025" required />
       <Input label="Date *" name="date" type="date" required defaultValue={new Date().toISOString().split("T")[0]} />
       <Textarea label="Description" name="description" placeholder="Brief description of this document…" />
-      <FileZone label="Upload PDF *" accept="application/pdf"
-        helpText="Max 50 MB · PDF files only" icon={FileText} file={pdf} onChange={setPdf} />
+      <FileZone label="Upload Document *"
+        accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx"
+        helpText="Max 50 MB · PDF, Word (.doc, .docx)" icon={FileText} file={pdf} onChange={setPdf} />
       <SubmitBtn loading={loading} label="Upload Article" />
 
       <ManageSection
         endpoint="/api/articles"
         label="article"
         getItemName={(item) => item.title as string}
-        renderRow={(item) => (
-          <div>
-            <p className="text-[#0A1628] text-sm font-semibold truncate">{item.title as string}</p>
-            <p className="text-gray-400 text-xs">{item.date as string} · {item.fileSize as string}</p>
-          </div>
-        )}
+        renderRow={(item) => {
+          const ft = (item.fileType as string | undefined) ?? 'pdf';
+          const badgeColor = ft === 'pdf' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-blue-50 text-blue-600 border-blue-200';
+          return (
+            <div className="flex items-center gap-3 min-w-0">
+              <span className={`flex-shrink-0 text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ${badgeColor}`}>
+                {ft.toUpperCase()}
+              </span>
+              <div className="min-w-0">
+                <p className="text-[#0A1628] text-sm font-semibold truncate">{item.title as string}</p>
+                <p className="text-gray-400 text-xs">{item.date as string} · {item.fileSize as string}</p>
+              </div>
+            </div>
+          );
+        }}
       />
     </form>
   );

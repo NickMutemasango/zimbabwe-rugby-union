@@ -103,6 +103,7 @@ export interface Article {
   pdfUrl: string;
   thumbnailUrl: string | null;
   fileSize: string;
+  fileType?: 'pdf' | 'doc' | 'docx';  // document format (defaults to 'pdf' for legacy records)
   date: string;
   createdAt: string;
 }
