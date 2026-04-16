@@ -63,7 +63,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <ZRULogo size={40} className="group-hover:scale-105 transition-transform" />
+            <ZRULogo size={50} className="group-hover:scale-105 transition-transform" />
             <div className="hidden sm:block">
               <div className={`font-black text-sm leading-none tracking-wide transition-colors ${logoTextColor}`}>ZIMBABWE</div>
               <div className={`font-bold text-[10px] tracking-[0.2em] uppercase transition-colors ${logoSubColor}`}>Rugby Union</div>

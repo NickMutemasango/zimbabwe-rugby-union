@@ -45,7 +45,7 @@ function TeamCard({
       />
 
       {/* Dark gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 group-hover:from-black/90 transition-all duration-300" />
+      <div className="absolute inset-0 bg-black/70 group-hover:from-black/90 transition-all duration-300" />
 
       {/* Top badge */}
       <div className="absolute top-4 left-4">

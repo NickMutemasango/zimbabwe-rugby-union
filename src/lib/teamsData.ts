@@ -7,6 +7,7 @@
 
 export type Medal = "gold" | "silver" | "bronze" | "milestone" | "upcoming";
 
+
 export interface TeamAchievement {
   year: string;
   title: string;
@@ -48,9 +49,9 @@ export const TEAMS_DATA: Record<string, TeamData> = {
     accentColor: "#006B3F",
     heroBgColor: "#006B3F",
     cardImage:
-      "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=800&q=75",
+      "https://zru.co.zw/wp-content/uploads/2022/10/452175358_1009418177855783_1331659985036213961_n.jpg",
     heroImage:
-      "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=1920&q=80",
+      "https://zru.co.zw/wp-content/uploads/2022/10/452175358_1009418177855783_1331659985036213961_n.jpg",
     description:
       "Zimbabwe's senior men's national rugby union team. Since their international debut in 1987, the Sables have carried the green and gold with pride on the world stage.",
     coach: "TBA",
@@ -121,9 +122,9 @@ export const TEAMS_DATA: Record<string, TeamData> = {
     accentColor: "#9333ea",
     heroBgColor: "#6b21a8",
     cardImage:
-      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=75",
+      "https://zru.co.zw/wp-content/uploads/2025/03/lady-2-1.jpeg",
     heroImage:
-      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1920&q=80",
+      "https://zru.co.zw/wp-content/uploads/2025/03/lady-2-1.jpeg",
     description:
       "The Lady Sables represent Zimbabwe in women's international rugby, competing in the Africa Women's Championship and inspiring a new generation of female athletes across the nation.",
     coach: "TBA",
@@ -182,9 +183,9 @@ export const TEAMS_DATA: Record<string, TeamData> = {
     accentColor: "#D4AF37",
     heroBgColor: "#92400e",
     cardImage:
-      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=75",
+      "https://zru.co.zw/wp-content/uploads/2025/03/WhatsApp-Image-2025-03-21-at-12.54.30-PM-1.jpeg",
     heroImage:
-      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1920&q=80",
+      "https://zru.co.zw/wp-content/uploads/2025/03/WhatsApp-Image-2025-03-21-at-12.54.30-PM-1.jpeg",
     description:
       "Fast, explosive, and electrifying. The Cheetahs bring African flair to the seven-a-side format, competing in continental and invitational tournaments worldwide.",
     coach: "TBA",
@@ -243,9 +244,9 @@ export const TEAMS_DATA: Record<string, TeamData> = {
     accentColor: "#3b82f6",
     heroBgColor: "#1d4ed8",
     cardImage:
-      "https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?auto=format&fit=crop&w=800&q=75",
+      "https://zru.co.zw/wp-content/uploads/2025/03/IMG_0607_1.jpeg",
     heroImage:
-      "https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?auto=format&fit=crop&w=1920&q=80",
+      "https://zru.co.zw/wp-content/uploads/2025/03/IMG_0607_1.jpeg",
     description:
       "The Junior Sables are the future of Zimbabwean rugby. The U20 national team competes in the World Rugby U20 Trophy and Africa Under-20 Championship.",
     coach: "TBA",

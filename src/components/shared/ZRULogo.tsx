@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import Logo from '../../../public/Rugby Logo.png'
 
 interface ZRULogoProps {
   size?: number;
@@ -13,7 +14,7 @@ export function ZRULogo({ size = 40, className = "" }: ZRULogoProps) {
   if (error) {
     return (
       <div
-        className={`bg-[#006B3F] rounded-full flex items-center justify-center border-2 border-[#D4AF37] flex-shrink-0 ${className}`}
+        className={` flex items-center justify-center border-2 border-[#D4AF37] flex-shrink-0 ${className}`}
         style={{ width: size, height: size, minWidth: size }}
       >
         <span className="text-white font-black" style={{ fontSize: size * 0.22 }}>ZRU</span>
@@ -23,11 +24,11 @@ export function ZRULogo({ size = 40, className = "" }: ZRULogoProps) {
 
   return (
     <div
-      className={`relative rounded-full overflow-hidden bg-white border-2 border-[#D4AF37] flex-shrink-0 ${className}`}
+      className={`relative rounded-full overflow-hidden bg-white  flex-shrink-0 ${className}`}
       style={{ width: size, height: size, minWidth: size }}
     >
       <Image
-        src="/Rugby logo.png"
+        src={Logo}
         alt="Zimbabwe Rugby Union"
         fill
         className="object-contain p-0.5"
