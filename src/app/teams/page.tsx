@@ -15,16 +15,19 @@ type FormBadge = { result: "W" | "L" | "D"; opponent: string };
 function TeamCard({
   team,
   formData,
+  dbAvailable,
   className = "",
 }: {
   team: TeamData;
   formData?: FormBadge[];
+  dbAvailable: boolean;
   className?: string;
 }) {
-  const badges: FormBadge[] =
-    formData && formData.length > 0
-      ? formData
-      : team.recentForm.map((r) => ({ result: r, opponent: "" }));
+  // When DB is available: show dynamic data only (empty state if none)
+  // When DB is unavailable (local dev / no MONGODB_URI): show static data
+  const badges: FormBadge[] | null = dbAvailable
+    ? (formData && formData.length > 0 ? formData : null)
+    : team.recentForm.map((r) => ({ result: r, opponent: "" }));
 
   return (
     <Link
@@ -69,6 +72,9 @@ function TeamCard({
 
         <div className="flex items-center justify-between mt-4">
           {/* Recent form badges with hover tooltip */}
+          {badges === null ? (
+            <p className="text-white/30 text-[10px] italic">No recent match data</p>
+          ) : (
           <div className="flex gap-1.5">
             {badges.map(({ result: r, opponent }, i) => (
               <div key={i} className="relative group/badge">
@@ -96,6 +102,7 @@ function TeamCard({
               </div>
             ))}
           </div>
+          )}
 
           {/* CTA */}
           <span
@@ -119,9 +126,11 @@ export default async function TeamsPage() {
     TEAMS_LIST.find((t) => t.slug === "junior-sables")!,
   ].filter(Boolean) as TeamData[];
 
+  const dbAvailable = !!process.env.MONGODB_URI;
+
   // Fetch dynamic form data — only when MongoDB is configured
   let formByTeam: Record<string, FormBadge[]> = {};
-  if (process.env.MONGODB_URI) {
+  if (dbAvailable) {
     try {
       const { findAll } = await import("@/lib/db");
       type RawEntry = { teamSlug: string; result: "W" | "L" | "D"; opponent: string; date: string };
@@ -180,20 +189,20 @@ export default async function TeamsPage() {
         {/* Row 1: Sables (featured, 2/3 width) + Lady Sables (1/3 width) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
           {sables && (
-            <TeamCard team={sables} formData={formByTeam["mens-xv"]} className="h-72 sm:h-80 lg:col-span-2" />
+            <TeamCard team={sables} formData={formByTeam["mens-xv"]} dbAvailable={dbAvailable} className="h-72 sm:h-80 lg:col-span-2" />
           )}
           {ladySables && (
-            <TeamCard team={ladySables} formData={formByTeam["womens-xv"]} className="h-72 sm:h-80 lg:col-span-1" />
+            <TeamCard team={ladySables} formData={formByTeam["womens-xv"]} dbAvailable={dbAvailable} className="h-72 sm:h-80 lg:col-span-1" />
           )}
         </div>
 
         {/* Row 2: Cheetahs + Junior Sables (equal halves) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {cheetahs && (
-            <TeamCard team={cheetahs} formData={formByTeam["cheetahs"]} className="h-64 sm:h-72" />
+            <TeamCard team={cheetahs} formData={formByTeam["cheetahs"]} dbAvailable={dbAvailable} className="h-64 sm:h-72" />
           )}
           {juniorSables && (
-            <TeamCard team={juniorSables} formData={formByTeam["junior-sables"]} className="h-64 sm:h-72" />
+            <TeamCard team={juniorSables} formData={formByTeam["junior-sables"]} dbAvailable={dbAvailable} className="h-64 sm:h-72" />
           )}
         </div>
       </div>
