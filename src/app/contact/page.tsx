@@ -1,37 +1,64 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, ExternalLink } from "lucide-react";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
-const CONTACT_INFO = [
+const DEPARTMENTS = [
+  {
+    label: "Admin",
+    color: "#0A1628",
+    items: [
+      { icon: Phone, value: "+263773611294", display: "+263 773 611 294", href: "tel:+263773611294" },
+      { icon: Mail, value: "admin@zru.co.zw", display: "admin@zru.co.zw", href: "mailto:admin@zru.co.zw" },
+    ],
+  },
+  {
+    label: "Marketing",
+    color: "#006B3F",
+    items: [
+      { icon: Phone, value: "+263789199906", display: "+263 789 199 906", href: "tel:+263789199906" },
+      { icon: Mail, value: "marketing@zru.co.zw", display: "marketing@zru.co.zw", href: "mailto:marketing@zru.co.zw" },
+    ],
+  },
+];
+
+const GENERAL_INFO = [
   {
     icon: MapPin,
     label: "Address",
-    value: "36 Walmer Drive, Harare, Zimbabwe",
+    display: "36 Walmer Drive, Harare, Zimbabwe",
+    href: "https://maps.google.com/?q=36+Walmer+Drive+Harare+Zimbabwe",
     sub: "Head Office",
+    external: true,
   },
   {
     icon: Phone,
     label: "Phone",
-    value: "+263 789 199 906",
+    display: "+263 789 199 906",
+    href: "tel:+263789199906",
     sub: "Mon – Fri, 8:00 AM – 5:00 PM",
+    external: false,
   },
   {
     icon: Mail,
     label: "Email",
-    value: "info@zru.co.zw",
+    display: "info@zru.co.zw",
+    href: "mailto:info@zru.co.zw",
     sub: "General enquiries",
+    external: false,
   },
   {
     icon: Clock,
     label: "Office Hours",
-    value: "Mon – Fri: 8:00 AM – 5:00 PM",
+    display: "Mon – Fri: 8:00 AM – 5:00 PM",
+    href: null,
     sub: "Central Africa Time",
+    external: false,
   },
 ];
 
-const DEPARTMENTS = [
+const FORM_DEPARTMENTS = [
   { label: "General Enquiries", value: "general" },
   { label: "Media & Press", value: "media" },
   { label: "Player Development", value: "development" },
@@ -73,8 +100,10 @@ export default function ContactPage() {
 
             {/* Left: Info cards + socials */}
             <div className="space-y-6">
+
+              {/* Department cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {CONTACT_INFO.map(({ icon: Icon, label, value, sub }, i) => (
+                {DEPARTMENTS.map(({ label, color, items }, i) => (
                   <motion.div
                     key={label}
                     initial={{ opacity: 0, y: 20 }}
@@ -82,11 +111,47 @@ export default function ContactPage() {
                     transition={{ delay: i * 0.1 }}
                     className="bg-white border border-gray-100 rounded-2xl p-5 hover:border-[#006B3F]/30 hover:shadow-lg hover:shadow-[#006B3F]/10 transition-all"
                   >
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: color + "1a" }}>
+                      <span className="text-[10px] font-black uppercase tracking-widest" style={{ color }}>{label[0]}</span>
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color }}>{label} Department</p>
+                    <div className="space-y-2">
+                      {items.map(({ icon: Icon, display, href }) => (
+                        <a key={href} href={href} className="flex items-center gap-2 group">
+                          <Icon size={13} className="text-gray-400 group-hover:text-[#006B3F] flex-shrink-0 transition-colors" />
+                          <span className="text-[#0A1628] font-semibold text-sm group-hover:text-[#006B3F] transition-colors">{display}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* General info cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {GENERAL_INFO.map(({ icon: Icon, label, display, href, sub, external }, i) => (
+                  <motion.div
+                    key={label}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 + i * 0.1 }}
+                    className="bg-white border border-gray-100 rounded-2xl p-5 hover:border-[#006B3F]/30 hover:shadow-lg hover:shadow-[#006B3F]/10 transition-all"
+                  >
                     <div className="w-10 h-10 bg-[#006B3F]/10 rounded-xl flex items-center justify-center mb-3">
                       <Icon size={18} className="text-[#006B3F]" />
                     </div>
                     <p className="text-[#006B3F] text-[10px] font-bold uppercase tracking-widest mb-1">{label}</p>
-                    <p className="text-[#0A1628] font-bold text-sm leading-snug">{value}</p>
+                    {href ? (
+                      <a
+                        href={href}
+                        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        className="text-[#0A1628] font-bold text-sm leading-snug hover:text-[#006B3F] transition-colors"
+                      >
+                        {display}
+                      </a>
+                    ) : (
+                      <p className="text-[#0A1628] font-bold text-sm leading-snug">{display}</p>
+                    )}
                     <p className="text-gray-400 text-xs mt-0.5">{sub}</p>
                   </motion.div>
                 ))}
@@ -114,31 +179,24 @@ export default function ContactPage() {
                 </div>
               </motion.div>
 
-              {/* Social links */}
+              {/* Follow the Sables — Linktree */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
                 className="bg-[#0A1628] rounded-2xl p-6"
               >
-                <p className="text-white font-bold mb-4">Follow the Sables</p>
-                <div className="grid grid-cols-4 gap-3">
-                  {[
-                    { icon: Facebook, label: "Facebook", handle: "@ZimRugby" },
-                    { icon: Twitter, label: "Twitter/X", handle: "@ZimSables" },
-                    { icon: Instagram, label: "Instagram", handle: "@zimbabwe_rugby" },
-                    { icon: Youtube, label: "YouTube", handle: "ZRU Official" },
-                  ].map(({ icon: Icon, label, handle }) => (
-                    <a
-                      key={label}
-                      href="#"
-                      className="flex flex-col items-center gap-2 p-3 bg-white/5 hover:bg-[#006B3F]/30 rounded-xl transition-all group"
-                    >
-                      <Icon size={20} className="text-white/60 group-hover:text-white transition-colors" />
-                      <span className="text-white/40 text-[10px] text-center leading-tight group-hover:text-white/70">{handle}</span>
-                    </a>
-                  ))}
-                </div>
+                <p className="text-white font-bold mb-1">Follow the Sables</p>
+                <p className="text-white/50 text-xs mb-5">All our social channels in one place.</p>
+                <a
+                  href="https://linktr.ee/ZRUSables"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 bg-[#006B3F] hover:bg-[#004D2C] text-white font-black text-sm rounded-xl transition-all hover:shadow-lg hover:shadow-[#006B3F]/30 hover:-translate-y-0.5"
+                >
+                  <ExternalLink size={15} />
+                  View All Social Channels on Linktree
+                </a>
               </motion.div>
             </div>
 
@@ -183,7 +241,7 @@ export default function ContactPage() {
                     <div className="relative">
                       <select value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))}
                         className={inputClass + " appearance-none pr-10"}>
-                        {DEPARTMENTS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+                        {FORM_DEPARTMENTS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
                       </select>
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs">▼</div>
                     </div>

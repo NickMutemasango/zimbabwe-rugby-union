@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "zru-dev",
-      "runtimeExecutable": "node",
+      "runtimeExecutable": "npm",
       "runtimeArgs": [
-        "node_modules/next/dist/bin/next",
+        "run",
         "dev"
       ],
       "port": 3000,
